@@ -55,9 +55,7 @@ Our WhatsApp bot project allows users to easily perform various actions such as 
 | -ud | Show the meaning of a name | `-ud Mahesh` |
 | -dic | Get the definition of a word from a dictionary | `-dic Love` |
 | -txtmeme | Add a header and footer to an image | `-txtmeme TopText;BottomText` |
-| -source | Get the source code | `-source` |
-
-<br>
+| -source | Get the source code | `-source` |  
 
 | Admin Commands | Explanation | Example |
 |---------|-------------|---------|
@@ -73,22 +71,21 @@ Our WhatsApp bot project allows users to easily perform various actions such as 
 | -unwarn | Remove a warning from a member | `-unwarn @mention` |
 | -tagall | Send an attendance alert to all members | `-tagall message` |
 
-
-# Deploy on Koyeb.com
+## Deploy on Koyeb.com
 
 To set up Koyeb for this project, follow these steps:
 
-- Create an account on Koyeb at https://app.koyeb.com/auth/signup.
-- Log in to the Koyeb dashboard and create a new app at https://app.koyeb.com/apps/new.
+- Create an account on Koyeb at <https://app.koyeb.com/auth/signup>.
+- Log in to the Koyeb dashboard and create a new app at <https://app.koyeb.com/apps/new>.
 - In the 'Deploy' section, choose your preferred deployment method (GitHub or Docker).
 - Set any necessary environment variables. All Required Env Are [Here](#evn)
 - Add the build and run commands: `npm i` and `node index.js`
 
-# Deploy on Heroku
+## Deploy on Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/jacktheboss220/WhatsAppBotMultiDevice)
 
-# Run locally
+## Run locally
 
 To run this WhatsApp bot locally, you will need to create a .env file in the local directory with the following values:
 
@@ -119,17 +116,15 @@ PIN_KEY = Get from [Pin](https://api.xteam.xyz/)
 Install the dependencies:
 
     npm install
-    
+
 To run the bot, enter the following command:
 
     node index.js
 
-## evn 
+## evn
 
 <img src="https://i.ibb.co/gMgnptR/env.jpg" alt="jacktheboss220" />
 
-# References:
+## References
 
 - [@Baileys](https://github.com/WhiskeySockets/Baileys)
-
-If you enjoyed using this project, please consider giving it a :star: on GitHub. Your support is greatly appreciated! :heart:
