@@ -22,7 +22,8 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
 
         // Fetch news
         const newsTopic = args.join(" ");
-        const articles = await googleNewsScraper({ searchTerm: newsTopic, prettyURLs: true });
+        const encodedTopic = encodeURIComponent(newsTopic);
+        const articles = await googleNewsScraper({ baseUrl: `https://news.google.com/search?q=${encodedTopic}` });
         if (articles.length == 0) {
             reactToMessage(from, sock, msg, "❌");
             return sendMessageWTyping(from, { text: "❌ *No news found*" }, { quoted: msg });
@@ -44,7 +45,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         */
 
         const news = articles.map((article, i) => {
-            return `*📰 ${i + 1}.*\n*Title:* ${article.title}\n*Source:* ${article.source}\n*Time:* ${article.time}\n*Link:* ${article.link}`;
+            return `*📰 ${article.title}\n*Source:* ${article.source}\n*Published:* ${article.time}\n*Read article:* ${article.link}`;
         }).join("\n");
 
         // Send news
