@@ -1,4 +1,4 @@
-const { delay } = require('@adiwajshing/baileys');
+const { delay } = require('@whiskeysockets/baileys');
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     const { sendMessageWTyping } = msgInfoObj;
@@ -9,7 +9,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
     const res = Object.keys(groups);
 
     let message = "*Broadcast message from owner.*\n\n" + args.join(" ");
-    
+
     try {
         for (let i = 0; i < res.length; i++) {
             await sendMessageWTyping(res[i], { text: message });

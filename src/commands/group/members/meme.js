@@ -7,7 +7,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 const getRandom = (ext) => { return `${Math.floor(Math.random() * 10000)}${ext}` };
 
-const { delay } = require("@adiwajshing/baileys");
+const { delay } = require("@whiskeysockets/baileys");
 module.exports.command = () => {
     let cmd = ["meme"];
     return { cmd, handler };

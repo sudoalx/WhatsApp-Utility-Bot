@@ -39,7 +39,7 @@ const {
     makeInMemoryStore,
     makeCacheableSignalKeyStore,
     isJidBroadcast,
-} = require('@adiwajshing/baileys'),
+} = require('@whiskeysockets/baileys'),
     P = require('pino'),
     NodeCache = require('node-cache'),
     cache = new NodeCache(),

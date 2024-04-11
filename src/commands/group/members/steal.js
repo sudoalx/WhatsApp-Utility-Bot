@@ -1,5 +1,5 @@
 const { getMemberData } = require("../../../mongo-DB/membersDataDb");
-const { downloadContentFromMessage } = require("@adiwajshing/baileys");
+const { downloadContentFromMessage } = require("@whiskeysockets/baileys");
 const { Sticker, createSticker, StickerTypes } = require("wa-sticker-formatter-1");
 const WSF = require("wa-sticker-formatter");
 

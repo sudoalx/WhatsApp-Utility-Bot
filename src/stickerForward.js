@@ -1,4 +1,4 @@
-const { downloadMediaMessage } = require("@adiwajshing/baileys");
+const { downloadMediaMessage } = require("@whiskeysockets/baileys");
 const WSF = require("wa-sticker-formatter");
 
 const fs = require('fs');
