@@ -38,6 +38,9 @@ dependencies:
   express:
     specifier: ^4.18.2
     version: 4.19.2
+  fb-downloader-scrapper:
+    specifier: ^1.0.3
+    version: 1.0.3
   fluent-ffmpeg:
     specifier: ^2.1.2
     version: 2.1.2
@@ -56,9 +59,6 @@ dependencies:
   heroku-client:
     specifier: ^3.1.0
     version: 3.1.0
-  inshorts-api:
-    specifier: github:jacktheboss220/inshorts-api
-    version: github.com/jacktheboss220/inshorts-api/e83f590ff016375d0ce6e063e837a40be3d4a5d2
   insta-downloader:
     specifier: github:jacktheboss220/insta-downloader
     version: github.com/jacktheboss220/insta-downloader/79b4875cadd003f8b4e6d971bf9938683d5608d8
@@ -2355,6 +2355,15 @@ packages:
   /fast-redact@3.5.0:
     resolution: {integrity: sha512-dwsoQlS7h9hMeYUq1W++23NDcBLV4KqONnITDV9DjfS3q1SgDGVrBdvvTLUotWtPSD7asWDV9/CmsZPy8Hf70A==}
     engines: {node: '>=6'}
+    dev: false
+
+  /fb-downloader-scrapper@1.0.3:
+    resolution: {integrity: sha512-j/LDMiWzP0O6c/uK4A/mvDQpuPBjYo0WUjwGmbt5ETjJ1PcAEE5mksscgUDUncCtCUPPVBSiAMbX7fuus0oSiw==}
+    dependencies:
+      axios: 0.27.2
+      cheerio: 1.0.0-rc.12
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /fecha@4.2.3:
@@ -5595,17 +5604,6 @@ packages:
       - debug
       - supports-color
       - utf-8-validate
-    dev: false
-
-  github.com/jacktheboss220/inshorts-api/e83f590ff016375d0ce6e063e837a40be3d4a5d2:
-    resolution: {tarball: https://codeload.github.com/jacktheboss220/inshorts-api/tar.gz/e83f590ff016375d0ce6e063e837a40be3d4a5d2}
-    name: inshorts-api
-    version: 1.0.3
-    dependencies:
-      cheerio: 1.0.0-rc.12
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - encoding
     dev: false
 
   github.com/jacktheboss220/insta-downloader/79b4875cadd003f8b4e6d971bf9938683d5608d8:
