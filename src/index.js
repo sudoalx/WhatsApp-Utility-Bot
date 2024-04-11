@@ -233,7 +233,7 @@ const startSock = async (connectionType) => {
         `Using version: ${version.join('.')}, latest: ${isLatest}\n`
     )
 
-    console.log('ConnecttionType:', connectionType)
+    console.log('ConnectionType:', connectionType)
     await fetchAuth(connectionType)
 
     const { state: authState, saveCreds: saveAuthCreds } =
@@ -510,16 +510,16 @@ const startSock = async (connectionType) => {
             }
 
             const messageInfo = {
-                prefix: prefix,
+                prefix,
                 type: messageType,
                 content: messageJson,
                 evv: trimmedContent,
                 command: commandReceived,
                 isGroup: isGroupChat,
-                ig: ig,
+                ig,
                 senderJid: participantId,
-                groupMetadata: groupMetadata,
-                groupAdmins: groupAdmins,
+                groupMetadata,
+                groupAdmins,
                 botNumberJid: userId,
                 sendMessageWTyping: sendTypingIndicator,
                 ownerSend: sendMessageWithMentions,
