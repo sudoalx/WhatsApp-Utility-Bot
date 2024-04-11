@@ -107,6 +107,9 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
                         } catch (err) {
                             console.error('Error deleting files:', err);
                         }
+                    }).catch(err => {
+                        console.error(err);
+                        sendMessageWTyping(from, { text: "❌ Error while processing sticker." }, { quoted: msg });
                     });
                 });
             });
