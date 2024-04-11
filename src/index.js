@@ -1,7 +1,7 @@
 const express = require('express'),
     app = express()
 app.use(express.urlencoded({ extended: true }))
-const port = process.env.PORT || 8000
+const port = process.env.PORT || 8888
 app.get('/', (req, res) => {
     res.send({
         message: 'Bot is running... :)',
