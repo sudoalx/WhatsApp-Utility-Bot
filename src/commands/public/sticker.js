@@ -1,6 +1,5 @@
 const { downloadMediaMessage } = require("@whiskeysockets/baileys");
 const WSF = require("wa-sticker-formatter");
-// const { path } = require("@ffmpeg-installer/ffmpeg");
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -66,24 +65,16 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
     const media = isTaggedImage ? getRandom('.png') : getRandom('.mp4');
 
     if (isMedia || isTaggedImage || isTaggedVideo) {
-        if (msg.message?.videoMessage?.seconds > 11) {
-            await reactToMessage(from, sock, msg, "❌");
-            return sendMessageWTyping(from,
-                { text: "Send a video less than 11 seconds long." },
-                { quoted: msg }
-            );
+        try {
+            if (msg.message?.videoMessage?.seconds > 11) {
+                throw new Error("Send a video less than 11 seconds long.");
+            }
+            const buffer = await downloadMediaMessage(msg, 'buffer', {});
+            await writeFile(media, buffer);
+            await buildSticker(media);
+        } catch (error) {
+            handleError(error, "❌ Error while processing media.");
         }
-        const buffer = await downloadMediaMessage(msg, 'buffer', {}).catch(err => {
-            console.error(err);
-            reactToMessage(from, sock, msg, "❌");
-            sendMessageWTyping(from, { text: "❌ Error while downloading media." }, { quoted: msg });
-        });
-        await writeFile(media, buffer);
-        await buildSticker(media).catch(err => {
-            console.error(err);
-            reactToMessage(from, sock, msg, "❌");
-            sendMessageWTyping(from, { text: "❌ Error while creating sticker." }, { quoted: msg });
-        });
     } else {
         sendMessageWTyping(from, { text: `❌ *Error reply to image or video only*` }, { quoted: msg });
         console.error('Error not replied');
@@ -114,11 +105,16 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
                 });
             });
         } catch (err) {
-            await reactToMessage(from, sock, msg, "❌");
-            sendMessageWTyping(from, { text: err.toString() }, { quoted: msg });
-            console.error(err);
+            handleError(err, "❌ Error while building sticker.");
         }
     }
+
+    // Error Handling Function
+    const handleError = (error, errorMessage) => {
+        console.error(error);
+        reactToMessage(from, sock, msg, "❌");
+        sendMessageWTyping(from, { text: errorMessage }, { quoted: msg });
+    };
 };
 
 module.exports.command = () => ({ cmd: ["sticker", "s"], handler });
