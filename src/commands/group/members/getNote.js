@@ -36,9 +36,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
     const noteName = args[0];
     if (!noteName) {
         sock.sendMessage(from, {
-            text: `❌ Please provide note title.\n
-            Check available notes by sending: *${process.env.PREFIX}notes*
-            Syntax: *${process.env.PREFIX}get <note title>*`
+            text: `❌ Please provide note title.\n\nCheck available notes by sending: *${process.env.PREFIX}notes\nSyntax: *${process.env.PREFIX}get <note title>*`
         }, { quoted: msg });
         return;
     }
