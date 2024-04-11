@@ -13,9 +13,8 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
 ---------------------------------------------------------------
 ${readMore}
 
-*${prefix}alive*
-    _Know if Bot is Online or not_
-    _Alias ${prefix}a_
+*${prefix}ping*
+    _Check the bot's response time_
 
 *${prefix}admin*
     _For Admin Commands List_
@@ -163,8 +162,8 @@ ${readMore}
     _Alias: ${prefix}txtmeme_
 
 *${prefix}ud*
-    _Show Meaning of your name_
-    eg:${prefix}ud Mahesh
+    _Urban Dictionary: Get the meaning of a word_
+    _eg: ${prefix}ud Love_
 
 *${prefix}dict*
     _A classic Dictionary_
