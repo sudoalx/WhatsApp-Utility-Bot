@@ -10,7 +10,18 @@ const fs = require('fs');
 
 const getRandom = (ext = '') => `${Math.floor(Math.random() * 10000)}${ext}`;
 
+const reactToMessage = async (from, sock, msg, emoji) => {
+    const reactonMessage = {
+        react: {
+            text: emoji,
+            key: msg.key
+        }
+    }
+    return sock.sendMessage(from, reactonMessage);
+}
+
 const handler = async (sock, msg, from, args, msgInfoObj) => {
+    await reactToMessage(from, sock, msg, "🔄");
     const { senderJid, type, content, isGroup, sendMessageWTyping, evv } = msgInfoObj;
 
     if (msg.message.extendedTextMessage) {
@@ -56,14 +67,23 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
 
     if (isMedia || isTaggedImage || isTaggedVideo) {
         if (msg.message?.videoMessage?.seconds > 11) {
+            await reactToMessage(from, sock, msg, "❌");
             return sendMessageWTyping(from,
-                { text: "Send less than 11 seconds." },
+                { text: "Send a video less than 11 seconds long." },
                 { quoted: msg }
             );
         }
-        const buffer = await downloadMediaMessage(msg, 'buffer', {});
+        const buffer = await downloadMediaMessage(msg, 'buffer', {}).catch(err => {
+            console.error(err);
+            reactToMessage(from, sock, msg, "❌");
+            sendMessageWTyping(from, { text: "❌ Error while downloading media." }, { quoted: msg });
+        });
         await writeFile(media, buffer);
-        await buildSticker(media);
+        await buildSticker(media).catch(err => {
+            console.error(err);
+            reactToMessage(from, sock, msg, "❌");
+            sendMessageWTyping(from, { text: "❌ Error while creating sticker." }, { quoted: msg });
+        });
     } else {
         sendMessageWTyping(from, { text: `❌ *Error reply to image or video only*` }, { quoted: msg });
         console.error('Error not replied');
@@ -76,6 +96,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
                 .addOutputOptions(outputOptions).toFormat("webp").save(ran);
             file.on("end", () => {
                 WSF.setMetadata(packName, authorName, ran).then(() => {
+                    reactToMessage(from, sock, msg, "✅");
                     sock.sendMessage(from,
                         { sticker: fs.readFileSync(ran) },
                         { quoted: msg }
@@ -90,6 +111,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
                 });
             });
         } catch (err) {
+            await reactToMessage(from, sock, msg, "❌");
             sendMessageWTyping(from, { text: err.toString() }, { quoted: msg });
             console.error(err);
         }
