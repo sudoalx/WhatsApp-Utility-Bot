@@ -10,7 +10,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         }
 
         // Fetch news
-        const articles = await googleNewsScraper({ searchTerm: args.join(" "), prettyURLs: false });
+        const articles = await googleNewsScraper({ searchTerm: args.join(" "), prettyURLs: true });
         if (articles.length == 0) {
             return sendMessageWTyping(from, { text: "❌ *No news found*" }, { quoted: msg });
         }
