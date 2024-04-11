@@ -1,6 +1,5 @@
-const { EventRegistry, QueryArticles } = require("eventregistry");
+const googleNewsScraper = require('google-news-scraper');
 
-const er = new EventRegistry({ apiKey: process.env.EVENT_REGISTRY_API_KEY });
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     const { sendMessageWTyping } = msgInfoObj;
@@ -10,20 +9,29 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
             return sendMessageWTyping(from, { text: `❌ *Enter news topic*` }, { quoted: msg });
         }
 
-        const conceptUri = await er.getConceptUri(args[0]);
-
-        if (!conceptUri) {
+        // Fetch news
+        const articles = await googleNewsScraper({ searchTerm: args.join(" "), prettyURLs: false });
+        if (articles.length == 0) {
             return sendMessageWTyping(from, { text: "❌ *No news found*" }, { quoted: msg });
         }
 
-        const q = new QueryArticles(er, { conceptUri: conceptUri, sortBy: "date", lang: "eng", count: 10 });
+        // Format news
+        // The articles array looks like this:
+        // [
+        //     {
+        //         "title": "Article title",
+        //         "subtitle": "Article subtitle",
+        //         "link": "http://url-to-website.com/path/to/article",
+        //         "image": "http://url-to-website.com/path/to/image.jpg",
+        //         "source": "Name of publication",
+        //         "time": "Time/date published (human-readable)",
+        //         "ArticleType": "String, one of ['regular' | 'topicFeatured' | 'topicSmall']"
+        //     }
+        // ]
 
-        const articles = await q.getArticles();
-
-        let news = "📰 *News:*";
-        articles.forEach(article => {
-            news += `\n📰 *${article.title}*\n🔗 *Read more:* ${article.url}`;
-        });
+        const news = articles.map((article, i) => {
+            return `*📰 ${i + 1}.*\n*Title:* ${article.title}\n*Source:* ${article.source}\n*Time:* ${article.time}\n*Link:* ${article.link}`;
+        }).join("\n");
 
         // Send news
         sendMessageWTyping(from, { text: news }, { quoted: msg });
