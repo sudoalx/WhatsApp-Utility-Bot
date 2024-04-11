@@ -12,7 +12,7 @@ const createGroupData = (groupJid, groupMetadata) => {
                 isBotOn: false,
                 isImgOn: false,
                 isChatBotOn: false,
-                is91Only: false,
+                countryExclusive: [],
                 grpName: groupMetadata.subject,
                 desc: groupMetadata.desc ? groupMetadata.desc.toString() : "",
                 cmdBlocked: [],
