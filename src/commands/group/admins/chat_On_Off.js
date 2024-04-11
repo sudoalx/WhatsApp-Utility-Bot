@@ -1,11 +1,11 @@
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     const { groupAdmins, botNumberJid, sendMessageWTyping } = msgInfoObj;
     if (!groupAdmins.includes(botNumberJid)) {
-        return sendMessageWTyping(from, { text: `❌ I'm not admin here` }, { quoted: msg });
+        return sendMessageWTyping(from, { text: `❌ I'm not an admin here` }, { quoted: msg });
     }
 
     if (!args[0]) {
-        return sendMessageWTyping(from, { text: `❌ *Provide On/Off status*` }, { quoted: msg });
+        return sendMessageWTyping(from, { text: `❌ *Provide on/off status*` }, { quoted: msg });
     }
 
     args[0] = args[0].toLowerCase();
@@ -17,7 +17,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
             sock.groupSettingUpdate(from, 'not_announcement');
             sendMessageWTyping(from, { text: `✅ *All members can send messages*` }, { quoted: msg });
         } else {
-            return sendMessageWTyping(from, { text: `❌ *Provide right args*` }, { quoted: msg });
+            return sendMessageWTyping(from, { text: `❌ *Provide the right arguments*` }, { quoted: msg });
         }
     } catch (err) {
         sendMessageWTyping(from, { text: err.toString() }, { quoted: msg });
