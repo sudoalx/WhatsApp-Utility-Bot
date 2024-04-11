@@ -26,6 +26,7 @@
     "form-data": "^4.0.0",
     "genius-lyrics": "^4.4.6",
     "genius-lyrics-api": "^3.2.0",
+    "google-news-scraper": "^1.2.2",
     "google-tts-api": "^2.0.2",
     "heroku-client": "^3.1.0",
     "insta-downloader": "github:jacktheboss220/insta-downloader",
