@@ -57,10 +57,16 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
     };
 
     try {
-        await createNote(from, note);
-        sock.sendMessage(from, {
-            text: "✅ Note saved successfully"
-        }, { quoted: msg });
+        await createNote(from, note).then(notes => {
+            sock.sendMessage(from, {
+                text: `✅ Note saved successfully\n\nUpdated Notes:\n${notes.map(n => `- ${n.title}`).join("\n")}`
+            }, { quoted: msg });
+        }).catch(err => {
+            console.log(err);
+            sock.sendMessage(from, {
+                text: "❌ Error occurred while saving note"
+            }, { quoted: msg });
+        });
     } catch (err) {
         console.log(err);
         sock.sendMessage(from, {
