@@ -767,23 +767,27 @@ const startSock = async (connectionType) => {
                         );
                     });
                 }
-                if (groupChat.is91Only == true && !updateEvent.participants[0].startsWith('91')) {
-                    await socket.sendMessage(
-                        updateEvent.id,
-                        { text: '```Only Indian Number Allowed In This Group.\n```' },
-                        {
-                            quoted: createMockMessage(
-                                updateEvent,
-                                'Only Indian Number Allowed, Namaste'
-                            ),
-                        }
-                    );
-                    socket.groupParticipantsUpdate(
-                        updateEvent.id,
-                        [updateEvent.participants[0]],
-                        'remove'
-                    );
+
+                // Check if the group is country exclusive
+                if (groupChat.countryExclusive.length > 0) {
+                    const participant = updateEvent.participants[0];
+                    const allowedCountries = groupChat.countryExclusive.join(', ');
+
+                    // Check if the participant's country is allowed
+                    if (!groupChat.countryExclusive.some(country => participant.startsWith(country))) {
+                        // If not allowed, remove the participant
+                        await socket.groupParticipantsUpdate(updateEvent.id, [participant], 'remove');
+
+                        // Send a message indicating the country restriction
+                        await socket.sendMessage(
+                            updateEvent.id,
+                            { text: `❌ Only people from the following countries are allowed in this group: ${allowedCountries}` },
+                            { quoted: createMockMessage(updateEvent, `Only people from the following countries are allowed in this group: ${allowedCountries}`) }
+                        );
+                    }
                 }
+
+
                 socket.sendMessage(myNumber, {
                     text:
                         '*Action:* ' +
