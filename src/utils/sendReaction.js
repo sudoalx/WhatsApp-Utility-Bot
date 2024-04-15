@@ -1,4 +1,4 @@
-export const reactToMessage = async (from, sock, msg, emoji) => {
+const reactToMessage = async (from, sock, msg, emoji) => {
     const reactonMessage = {
         react: {
             text: emoji,
@@ -6,4 +6,8 @@ export const reactToMessage = async (from, sock, msg, emoji) => {
         }
     }
     return sock.sendMessage(from, reactonMessage);
+}
+
+module.exports = {
+    reactToMessage
 }
