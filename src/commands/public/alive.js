@@ -1,13 +1,4 @@
-
-const reactToMessage = async (from, sock, msg, emoji) => {
-    const reactonMessage = {
-        react: {
-            text: emoji,
-            key: msg.key
-        }
-    }
-    return sock.sendMessage(from, reactonMessage);
-}
+const { reactToMessage } = require("../../utils/sendReaction");
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     const start = process.hrtime();

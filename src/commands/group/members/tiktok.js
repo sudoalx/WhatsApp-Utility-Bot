@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Tiktok = require("@tobyg74/tiktok-api-dl");
+const { reactToMessage } = require('../../../utils/sendReaction');
 
 const validate = (url) => {
     // Regular expression to match TikTok URL pattern
@@ -9,15 +10,7 @@ const validate = (url) => {
     return regex.test(url);
 };
 
-const reactToMessage = async (from, sock, msg, emoji) => {
-    const reactonMessage = {
-        react: {
-            text: emoji,
-            key: msg.key
-        }
-    }
-    return sock.sendMessage(from, reactonMessage);
-}
+
 
 const extractUrl = (text) => {
     // extract the first URL from the text

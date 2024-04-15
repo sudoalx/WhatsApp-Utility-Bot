@@ -1,10 +1,17 @@
-const snapsave = require("insta-downloader");
+const snapsave = require("snapsave-scraper");
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
-    const { prefix, sendMessageWTyping, ig } = msgInfoObj;
+    const { evv, type, content, sendMessageWTyping, senderJid, ig } = msgInfoObj;
 
-    if (args.length === 0) return sendMessageWTyping(from, { text: `❌ URL is empty! \nSend ${prefix}insta url` }, { quoted: msg });
-    let urlInsta = args[0];
+    // convert the content text to json
+    const contentAsJSON = JSON.parse(content);
+    const { extendedTextMessage } = contentAsJSON;
+    const quotedMessage = extendedTextMessage.contextInfo.quotedMessage.extendedTextMessage.text
+
+
+    let urlInsta = quotedMessage ?? args[0]
+    if (!urlInsta) return sendMessageWTyping(from, { text: "❌ Please provide a valid Instagram URL." }, { quoted: msg });
+
 
     if (!(urlInsta.includes("instagram.com/p/") ||
         urlInsta.includes("instagram.com/reel/") ||
@@ -15,7 +22,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         );
 
     if (urlInsta.includes("?")) urlInsta = urlInsta.split("/?")[0];
-    console.log(urlInsta);
+    console.log("Found URL:", urlInsta);
     snapsave(urlInsta).then(async res => {
 
         if (res.status) {
@@ -29,7 +36,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
                             { image: { url: url } },
                             { quoted: msg }
                         );
-                    } else {
+                    } else if (url.includes("mp4") || url.includes("mkv") || url.includes("webm")) {
                         sock.sendMessage(from,
                             { video: { url: url } },
                             { quoted: msg }
@@ -38,7 +45,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
                 }, 1000 * 1);
             }
         } else {
-            sendMessageWTyping(from, { text: "No Data Found!!" }, { quoted: msg });
+            sendMessageWTyping(from, { text: "Unable to download the media." }, { quoted: msg });
         }
     })
 }

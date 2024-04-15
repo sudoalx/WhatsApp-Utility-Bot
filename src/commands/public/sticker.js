@@ -6,18 +6,10 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const { getMemberData, member } = require("../../mongo-DB/membersDataDb");
 const { writeFile } = require('fs/promises');
 const fs = require('fs');
+const { reactToMessage } = require("../../utils/sendReaction");
 
 const getRandom = (ext = '') => `${Math.floor(Math.random() * 10000)}${ext}`;
 
-const reactToMessage = async (from, sock, msg, emoji) => {
-    const reactonMessage = {
-        react: {
-            text: emoji,
-            key: msg.key
-        }
-    }
-    return sock.sendMessage(from, reactonMessage);
-}
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     await reactToMessage(from, sock, msg, "🔄");

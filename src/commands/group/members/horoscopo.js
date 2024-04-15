@@ -1,15 +1,7 @@
 const cheerio = require('cheerio');
 const axios = require('axios');
+const { reactToMessage } = require('../../../utils/sendReaction');
 
-const reactToMessage = async (from, sock, msg, emoji) => {
-    const reactonMessage = {
-        react: {
-            text: emoji,
-            key: msg.key
-        }
-    }
-    return sock.sendMessage(from, reactonMessage);
-}
 
 
 const getHoroscopeEs = async (sign) => {

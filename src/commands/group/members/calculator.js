@@ -1,14 +1,6 @@
 const math = require("mathjs");
+const { reactToMessage } = require("../../../utils/sendReaction");
 
-const reactToMessage = async (from, sock, msg, emoji) => {
-    const reactonMessage = {
-        react: {
-            text: emoji,
-            key: msg.key
-        }
-    }
-    return sock.sendMessage(from, reactonMessage);
-}
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     // react to the message with a loading indicator
