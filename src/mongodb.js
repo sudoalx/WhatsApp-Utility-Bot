@@ -3,7 +3,7 @@ require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `${process.env.MONGODB_KEY}`;
 //-------------------------------------------------------------------------------------------------------------//
-const mdClient = new MongoClient(uri, {
+const mongoClient = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -13,8 +13,8 @@ const mdClient = new MongoClient(uri, {
 //-------------------------------------------------------------------------------------------------------------/
 (async () => {
     let flag = false;
-    await mdClient.connect().then(() => { console.log("Connected to Database") }).catch(err => { console.log(err) });
-    const db = mdClient.db('MyBotDataDB');
+    await mongoClient.connect().then(() => { console.log("Connected to Database") }).catch(err => { console.log(err) });
+    const db = mongoClient.db('MyBotDataDB');
     const collection = await db.collections();
     collection.forEach(ele => {
         if (ele.namespace == "MyBotDataDB.AuthTable") {
@@ -27,4 +27,4 @@ const mdClient = new MongoClient(uri, {
 })();
 //-------------------------------------------------------------------------------------------------------------//
 
-module.exports = mdClient;
+module.exports = mongoClient;
