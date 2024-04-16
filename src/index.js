@@ -749,28 +749,20 @@ const startSock = async (connectionType) => {
                 }
 
 
-                socket.sendMessage(myNumber, {
+                socket.sendMessage(LOGS_CHANNEL, {
                     text:
-                        '*Action:* ' +
-                        updateEvent.action +
-                        '\n*Group:* ' +
-                        updateEvent.id +
-                        '\n*Group Name:* ' +
-                        (groupChat?.grpName || 'Unknown') +
-                        '\n*Participants:* ' +
-                        updateEvent.participants[0],
+                        `*Action:* ${updateEvent.action}` +
+                        `\n*Group:* ${updateEvent.id}` +
+                        `\n*Group Name:* ${groupChat?.grpName ?? 'Unknown'}` +
+                        `\n*Participants:* ${updateEvent.participants[0]}`,
                 });
             } else {
-                socket.sendMessage(myNumber, {
+                socket.sendMessage(LOGS_CHANNEL, {
                     text:
-                        '*Action:* ' +
-                        updateEvent.action +
-                        '\n*Group:* ' +
-                        updateEvent.id +
-                        '\n*Group Name:* ' +
-                        (groupChat?.grpName || 'Unknown') +
-                        '\n*Participants:* ' +
-                        updateEvent.participants[0],
+                        `*Action:* ${updateEvent.action}` +
+                        `\n*Group:* ${updateEvent.id}` +
+                        `\n*Group Name:* ${groupChat?.grpName ?? 'Unknown'}` +
+                        `\n*Participants:* ${updateEvent.participants[0]}`,
                 });
             }
             console.log(updateEvent);
