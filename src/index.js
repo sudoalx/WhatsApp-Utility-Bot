@@ -1,13 +1,26 @@
-const express = require('express'),
-    app = express()
+require('dotenv').config()
+const mongoClient = require('./mongodb');
+const fs = require('fs')
+const util = require('util')
+const readdir = util.promisify(fs.readdir)
+const express = require('express')
+const P = require('pino')
+const NodeCache = require('node-cache')
+
+
+const app = express()
+
 app.use(express.urlencoded({ extended: true }))
+
 const port = process.env.PORT || 8888
+
 app.get('/', (req, res) => {
     res.send({
         message: 'Bot is running... :)',
         timestamp: new Date(),
     })
 })
+
 app.listen(port, () => {
     console.log('\nWeb-server running!\n');
 
@@ -40,9 +53,7 @@ const {
     makeCacheableSignalKeyStore,
     isJidBroadcast,
 } = require('@whiskeysockets/baileys')
-require('dotenv').config()
-const P = require('pino')
-const NodeCache = require('node-cache')
+
 const cache = new NodeCache()
 const msgRetryCounterMap = new NodeCache()
 const logger = P({ level: 'silent' })
@@ -70,9 +81,6 @@ const myNumber = process.env.myNumber + '@s.whatsapp.net',
     ]
 
 
-const fs = require('fs')
-const util = require('util')
-const readdir = util.promisify(fs.readdir)
 let commandsPublic = {},
     commandsMembers = {},
     commandsAdmins = {},
@@ -111,7 +119,6 @@ const addCommands = async () => {
 
 }
 
-const mdClient = require('./mongodb');
 
 const authNameInDatabase = 'auth';
 const authInfoDir = './baileys_auth_info';
@@ -132,7 +139,7 @@ async function fetchAuth(action) {
             fs.mkdir(authInfoDir);
         }
 
-        const collection = mdClient.db('MyBotDataDB').collection('AuthTable');
+        const collection = mongoClient.db('MyBotDataDB').collection('AuthTable');
         let data = await collection.findOne({ _id: authNameInDatabase });
 
         if (!data) {
@@ -166,7 +173,7 @@ async function fetchAuth(action) {
 
 
 async function updateLogin() {
-    let collection = mdClient.db('MyBotDataDB').collection('AuthTable');
+    let collection = mongoClient.db('MyBotDataDB').collection('AuthTable');
     try {
         let authData = fs.readFileSync('baileys_auth_info/creds.json');
         authData = JSON.parse(authData);
