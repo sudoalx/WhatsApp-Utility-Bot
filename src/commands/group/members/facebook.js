@@ -18,7 +18,8 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         return sendMessageWTyping(from, { text: "❌ Please provide a valid Facebook URL." }, { quoted: msg });
     }
 
-
+    // sanitize the url, extract url from the message by using regex
+    urlInsta = urlInsta.match(/(https?:\/\/[^ ]*)/)?.[0];
     if (!(urlFb.includes("facebook.com/"))) {
         await reactToMessage(from, sock, msg, "❌");
         return sendMessageWTyping(from,
