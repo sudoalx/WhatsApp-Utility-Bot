@@ -39,13 +39,14 @@ const {
     makeInMemoryStore,
     makeCacheableSignalKeyStore,
     isJidBroadcast,
-} = require('@whiskeysockets/baileys'),
-    P = require('pino'),
-    NodeCache = require('node-cache'),
-    cache = new NodeCache(),
-    msgRetryCounterMap = new NodeCache(),
-    logger = P({ level: 'silent' }),
-    store = makeInMemoryStore({ logger: logger })
+} = require('@whiskeysockets/baileys')
+require('dotenv').config()
+const P = require('pino')
+const NodeCache = require('node-cache')
+const cache = new NodeCache()
+const msgRetryCounterMap = new NodeCache()
+const logger = P({ level: 'silent' })
+const store = makeInMemoryStore({ logger: logger })
 store?.readFromFile('./baileys_store_multi.json')
 const interval2 = setInterval(() => {
     store?.writeToFile('./baileys_store_multi.json')
@@ -57,134 +58,112 @@ const interval2 = setInterval(() => {
     } = require('./mongo-DB/membersDataDb'),
     { createGroupData, getGroupData, group } = require('./mongo-DB/groupDataDb'),
     { getBotData, createBotData, bot } = require('./mongo-DB/botDataDb'),
-    { stickerForward, forwardGroup } = require('./stickerForward')
-require('dotenv').config()
-const { igApi } = require('insta-fetcher')
-let ig
+    { stickerForward, forwardGroup } = require('./utils/stickerForward')
+const { getGroupAdmins } = require('./utils/getGroupAdmins')
+
+const LOGS_CHANNEL = process.env.LOGS_CHANNEL ?? myNumber
 const myNumber = process.env.myNumber + '@s.whatsapp.net',
-    prefix = process.env.PREFIX || '-',
+    prefix = process.env.PREFIX || '/',
     moderatos = [
         '' + process.env.myNumber,
         '' + process.env.botNumber,
-    ],
-    fs = require('fs'),
-    util = require('util'),
-    readdir = util.promisify(fs.readdir)
+    ]
+
+
+const fs = require('fs')
+const util = require('util')
+const readdir = util.promisify(fs.readdir)
 let commandsPublic = {},
     commandsMembers = {},
     commandsAdmins = {},
     commandsOwners = {}
 
 const addCommands = async () => {
-    let directory = './commands/public/';
-    let files = await readdir(directory);
-    files.forEach((file) => {
-        if (file.endsWith('.js')) {
-            let { command } = require(directory + file);
-            let { cmd, handler } = command();
-            for (let cmdName of cmd) {
-                commandsPublic[cmdName] = handler;
+    async function loadCommands(directory, commandsObject) {
+        const files = await readdir(directory);
+        for (const file of files) {
+            if (file.endsWith('.js')) {
+                const { command } = require(directory + file);
+                const { cmd, handler } = command();
+                for (const cmdName of cmd) {
+                    commandsObject[cmdName] = handler;
+                }
             }
         }
-    });
+    }
 
-    directory = './commands/group/members/';
-    files = await readdir(directory);
-    files.forEach((file) => {
-        if (file.endsWith('.js')) {
-            let { command } = require(directory + file);
-            let { cmd, handler } = command();
-            for (let cmdName of cmd) {
-                commandsMembers[cmdName] = handler;
-            }
-        }
-    });
+    await loadCommands('./commands/public/', commandsPublic);
+    await loadCommands('./commands/group/members/', commandsMembers);
+    await loadCommands('./commands/group/admins/', commandsAdmins);
+    await loadCommands('./commands/owner/', commandsOwners);
 
-    directory = './commands/group/admins/';
-    files = await readdir(directory);
-    files.forEach((file) => {
-        if (file.endsWith('.js')) {
-            let { command } = require(directory + file);
-            let { cmd, handler } = command();
-            for (let cmdName of cmd) {
-                commandsAdmins[cmdName] = handler;
-            }
-        }
-    });
+    // Delete old media files
+    const extensionsToDelete = ['.webp', '.jpeg', '.mp3', '.mp4', '.jpg', '.png', '.gif'];
+    const directory = './';
+    const files = await readdir(directory);
 
-    directory = './commands/owner/';
-    files = await readdir(directory);
     files.forEach((file) => {
-        if (file.endsWith('.js')) {
-            let { command } = require(directory + file);
-            let { cmd, handler } = command();
-            for (let cmdName of cmd) {
-                commandsOwners[cmdName] = handler;
-            }
-        }
-    });
-
-    // Clean up files in the current directory with specific extensions
-    directory = './';
-    files = await readdir(directory);
-    files.forEach((file) => {
-        if (
-            file.endsWith('.webp') ||
-            file.endsWith('.jpeg') ||
-            file.endsWith('.mp3') ||
-            file.endsWith('.mp4') ||
-            file.endsWith('.jpg') ||
-            file.endsWith('.png') ||
-            file.endsWith('.gif')
-        ) {
+        const extension = file.substring(file.lastIndexOf('.'));
+        if (extensionsToDelete.includes(extension)) {
             fs.unlinkSync(directory + file);
         }
     });
-},
-    mdClient = require('./mongodb'),
-    authNameInDatabase = 'auth'
+
+}
+
+const mdClient = require('./mongodb');
+
+const authNameInDatabase = 'auth';
+const authInfoDir = './baileys_auth_info';
+const credsFilePath = `${authInfoDir}/creds.json`;
+const storeFilePath = 'baileys_store_multi.json';
+
 async function fetchAuth(action) {
-    if (action == 'logout' || action == 'error') {
-        fs.rmSync('baileys_auth_info/creds.json', {
-            recursive: true,
-            force: true,
-        });
-        fs.rmSync('baileys_store_multi.json', {
-            recursive: true,
-            force: true,
-        });
-    }
     try {
-        if (!fs.existsSync('./baileys_auth_info')) {
-            fs.mkdirSync('./baileys_auth_info');
+        if (action === 'logout' || action === 'error') {
+            await Promise.all([
+                fs.rm(credsFilePath, { force: true, recursive: true }),
+                fs.rm(storeFilePath, { force: true, recursive: true })
+            ]);
         }
-        let collection = mdClient.db('MyBotDataDB').collection('AuthTable');
-        await collection.findOne({ _id: authNameInDatabase }).then(async (result) => {
-            if (result == null) {
-                console.log('Auth not found in the database');
-                await collection.insertOne({
-                    _id: authNameInDatabase,
-                    sessionAuth: '',
-                });
-            }
-        });
+
+        if (!fs.existsSync(authInfoDir)) {
+            console.log('Auth directory not found, creating...');
+            fs.mkdir(authInfoDir);
+        }
+
+        const collection = mdClient.db('MyBotDataDB').collection('AuthTable');
         let data = await collection.findOne({ _id: authNameInDatabase });
+
+        if (!data) {
+            console.log('Auth not found in the database');
+            await collection.insertOne({ _id: authNameInDatabase, sessionAuth: '' });
+            data = { sessionAuth: '' };
+        }
+
         let sessionAuth = data.sessionAuth;
-        if (sessionAuth != '') {
-            sessionAuth = JSON.parse(sessionAuth);
-            sessionAuth = JSON.stringify(sessionAuth);
-            if (action == 'start') {
-                fs.writeFileSync('baileys_auth_info/creds.json', sessionAuth);
-            } else if (action == 'reconnecting') {
+
+        if (sessionAuth !== '') {
+            sessionAuth = JSON.stringify(JSON.parse(sessionAuth));
+            if (action === 'start') {
+                fs.writeFile(credsFilePath, sessionAuth, (err) => {
+                    if (err) {
+                        console.error('Error writing file:', err);
+                    } else {
+                        console.log('File written successfully');
+                    }
+                });
+            } else if (action === 'reconnecting') {
                 console.log('Auth already written');
             }
         } else {
             console.log('Session Auth Empty');
         }
-    } catch (exception) {
-        console.error('Local file writing errors:', exception);
+    } catch (error) {
+        console.error('Error:', error);
     }
 }
+
 
 async function updateLogin() {
     let collection = mdClient.db('MyBotDataDB').collection('AuthTable');
@@ -199,27 +178,6 @@ async function updateLogin() {
     } catch (error) {
         console.log('Error updating the database:', error);
     }
-}
-
-const getGroupAdmins = (groupMembers) =>
-    groupMembers
-        .filter(
-            (member) =>
-                member.admin === 'admin' || member.admin === 'superadmin'
-        )
-        .map((admin) => admin.id);
-
-try {
-    fs.rmSync('./baileys_auth_info/creds.json', {
-        recursive: true,
-        force: true,
-    });
-    fs.rmSync('./baileys_store_multi.json', {
-        recursive: true,
-        force: true,
-    });
-} catch (error) {
-    console.log('Local auth files already deleted');
 }
 
 
@@ -270,407 +228,403 @@ const startSock = async (connectionType) => {
             ...options,
             mediaUploadTimeoutMs: 3600000,
         });
-    },
-        createMockMessage = (chat, content) => {
-            return {
-                key: {
-                    remoteJid: chat.id,
-                    fromMe: false,
-                    id: '810B5GH29EE7481fakeid',
-                    participant: '0@s.whatsapp.net',
-                },
-                messageTimestamp: 1122334455,
-                pushName: 'WhatsApp',
-                message: { conversation: content },
-            }
-        },
-        messagesArray = [],
-        messageProcessingInterval = setInterval(async () => {
-            if (messagesArray.length > 0) {
-                processMessage(messagesArray.shift())
-            }
-        }, 500),
-        processMessage = async (incomingUser) => {
-            const sendMessageWithMentions = (messageText) => {
-                try {
-                    socket.sendMessage(myNumber, {
-                        text: messageText,
-                        mentions: incomingUser.message.extendedTextMessage
-                            ? incomingUser.message.extendedTextMessage.contextInfo.mentionedJid
-                            : '',
-                    })
-                } catch {
-                    socket.sendMessage(myNumber, { text: messageText })
-                }
+    }
+    const createMockMessage = (chat, content) => {
+        return {
+            key: {
+                remoteJid: chat.id,
+                fromMe: false,
+                id: '810B5GH29EE7481fakeid',
+                participant: '0@s.whatsapp.net',
             },
-                remoteJid = incomingUser.key.remoteJid,
-                messageJson = JSON.stringify(incomingUser.message),
-                messageType = Object.keys(incomingUser.message)[0]
-            messageType === 'stickerMessage' &&
-                forwardGroup != '' &&
-                stickerForward(socket, incomingUser, remoteJid)
-            let userId = socket.user.id
-            userId = userId.includes(':')
-                ? userId.split(':')[0] + '@s.whatsapp.net'
-                : userId
-            let messageContent;
+            messageTimestamp: 1122334455,
+            pushName: 'WhatsApp',
+            message: { conversation: content },
+        }
+    }
+    const messagesArray = []
+    const messageProcessingInterval = setInterval(async () => {
+        if (messagesArray.length > 0) {
+            processMessage(messagesArray.shift())
+        }
+    }, 500)
+    const processMessage = async (incomingUser) => {
+        const sendMessageWithMentions = async (messageText) => {
 
-            switch (messageType) {
-                case 'conversation':
-                    messageContent = incomingUser.message.conversation;
-                    break;
-                case 'imageMessage':
-                    messageContent = incomingUser.message.imageMessage?.caption || '';
-                    break;
-                case 'videoMessage':
-                    messageContent = incomingUser.message.videoMessage?.caption || '';
-                    break;
-                case 'extendedTextMessage':
-                    messageContent = incomingUser.message.extendedTextMessage?.text || '';
-                    break;
-                case 'buttonsResponseMessage':
-                    messageContent = incomingUser.message.buttonsResponseMessage?.selectedDisplayText || '';
-                    break;
-                case 'templateButtonReplyMessage':
-                    messageContent = incomingUser.message.templateButtonReplyMessage?.selectedDisplayText || '';
-                    break;
-                case 'listResponseMessage':
-                    messageContent = incomingUser.message.listResponseMessage?.title || '';
-                    break;
-                default:
-                    messageContent = '';
-                    break;
+            try {
+                await socket.sendMessage(LOGS_CHANNEL, {
+                    text: messageText,
+                    mentions: incomingUser.message.extendedTextMessage
+                        ? incomingUser.message.extendedTextMessage.contextInfo.mentionedJid
+                        : '',
+                });
+            } catch (error) {
+                console.log('Error sending message:', error);
             }
+        };
 
-            switch (messageType) {
-                case 'buttonsResponseMessage':
-                    if (incomingUser.message.buttonsResponseMessage?.selectedButtonId === 'eva') {
-                        messageContent = ensurePrefix(messageContent);
-                    }
-                    break;
-                case 'templateButtonReplyMessage':
-                    if (!messageContent.startsWith(prefix)) {
-                        messageContent = prefix + messageContent;
-                    }
-                    break;
-                case 'listResponseMessage':
-                    if (incomingUser.message.listResponseMessage?.singleSelectReply?.selectedRowId === 'eva') {
-                        messageContent = ensurePrefix(messageContent);
-                    }
-                    break;
-                default:
-                    break;
-            }
+        const remoteJid = incomingUser.key.remoteJid;
+        const messageJson = JSON.stringify(incomingUser.message);
+        const messageType = Object.keys(incomingUser.message)[0];
+        messageType === 'stickerMessage' &&
+            forwardGroup != '' &&
+            stickerForward(socket, incomingUser, remoteJid)
+        let userId = socket.user.id
+        userId = userId.includes(':')
+            ? userId.split(':')[0] + '@s.whatsapp.net'
+            : userId
+        let messageContent;
 
-            function ensurePrefix(content) {
-                return content.startsWith(prefix) ? content : prefix + content;
-            }
+        switch (messageType) {
+            case 'conversation':
+                messageContent = incomingUser.message.conversation;
+                break;
+            case 'imageMessage':
+                messageContent = incomingUser.message.imageMessage?.caption || '';
+                break;
+            case 'videoMessage':
+                messageContent = incomingUser.message.videoMessage?.caption || '';
+                break;
+            case 'extendedTextMessage':
+                messageContent = incomingUser.message.extendedTextMessage?.text || '';
+                break;
+            case 'buttonsResponseMessage':
+                messageContent = incomingUser.message.buttonsResponseMessage?.selectedDisplayText || '';
+                break;
+            case 'templateButtonReplyMessage':
+                messageContent = incomingUser.message.templateButtonReplyMessage?.selectedDisplayText || '';
+                break;
+            case 'listResponseMessage':
+                messageContent = incomingUser.message.listResponseMessage?.title || '';
+                break;
+            default:
+                messageContent = '';
+                break;
+        }
 
-            if (messageContent[1] == ' ') {
-                messageContent = messageContent[0] + messageContent.slice(2)
-            }
-            const trimmedContent = messageContent.trim().split(/ +/).slice(1).join(' ')
-            const commandReceived = messageContent.slice(1).trim().split(/ +/).shift().toLowerCase()
-            const argumentsMsg = messageContent.trim().split(/ +/).slice(1)
-            const isPrefixedCommand = messageContent.startsWith(prefix)
-
-            if (
-                !isPrefixedCommand &&
-                (messageType == 'videoMessage' || messageType == 'stickerMessage')
-            ) {
-                return
-            }
-            const isGroupChat = remoteJid.endsWith('@g.us');
-            const participantId = isGroupChat ? incomingUser.key.participant : incomingUser.key.remoteJid;
-            const senderId = incomingUser.key.fromMe ? userId : participantId;
-            const senderName = incomingUser.key.fromMe ? socket.user.name : incomingUser.pushName;
-
-            if (messageType === 'conversation' || messageType === 'extendedTextMessage') {
-                member.updateOne(
-                    { _id: senderId },
-                    { $inc: { totalMessages: 1 }, $set: { username: senderName } }
-                );
-                createMembersData(senderId, senderName);
-            }
-
-            let groupMetadata = ''
-            if (
-                isGroupChat &&
-                (messageType == 'conversation' || messageType == 'extendedTextMessage')
-            ) {
-                groupMetadata = cache.get(remoteJid + ':groupMetadata')
-                if (!groupMetadata) {
-                    groupMetadata = await socket.groupMetadata(remoteJid);
-                    const cacheExpiry = 3600; // Cache expiry time in seconds
-                    const cacheKey = remoteJid + ':groupMetadata';
-                    cache.set(cacheKey, groupMetadata, cacheExpiry);
-                    createGroupData(remoteJid, groupMetadata);
+        switch (messageType) {
+            case 'buttonsResponseMessage':
+                if (incomingUser.message.buttonsResponseMessage?.selectedButtonId === 'eva') {
+                    messageContent = ensurePrefix(messageContent);
                 }
+                break;
+            case 'templateButtonReplyMessage':
+                if (!messageContent.startsWith(prefix)) {
+                    messageContent = prefix + messageContent;
+                }
+                break;
+            case 'listResponseMessage':
+                if (incomingUser.message.listResponseMessage?.singleSelectReply?.selectedRowId === 'eva') {
+                    messageContent = ensurePrefix(messageContent);
+                }
+                break;
+            default:
+                break;
+        }
 
-                // Update member count and name if member already exists in the group
-                group.updateOne(
-                    {
-                        _id: remoteJid,
-                        'members.id': senderId,
-                    },
-                    {
-                        $inc: { 'members.$.count': 1 },
-                        $set: { 'members.$.name': senderName },
-                    }
-                )
-                    .then((result) => {
-                        // If no match found, add the member to the group
-                        if (result.matchedCount === 0) {
-                            group.updateOne(
-                                { _id: remoteJid },
-                                {
-                                    $push: {
-                                        members: {
-                                            id: senderId,
-                                            name: senderName,
-                                            count: 1,
-                                        },
-                                    },
-                                }
-                            );
-                        }
-                    });
+        function ensurePrefix(content) {
+            return content.startsWith(prefix) ? content : prefix + content;
+        }
 
-                // Increment total message count for the group
-                group.updateOne({ _id: remoteJid }, { $inc: { totalMsgCount: 1 } });
+        if (messageContent[1] == ' ') {
+            messageContent = messageContent[0] + messageContent.slice(2)
+        }
+        const trimmedContent = messageContent.trim().split(/ +/).slice(1).join(' ')
+        const commandReceived = messageContent.slice(1).trim().split(/ +/).shift().toLowerCase()
+        const argumentsMsg = messageContent.trim().split(/ +/).slice(1)
+        const isPrefixedCommand = messageContent.startsWith(prefix)
 
+        if (
+            !isPrefixedCommand &&
+            (messageType == 'videoMessage' || messageType == 'stickerMessage')
+        ) {
+            return
+        }
+        const isGroupChat = remoteJid.endsWith('@g.us');
+        const participantId = isGroupChat ? incomingUser.key.participant : incomingUser.key.remoteJid;
+        const senderId = incomingUser.key.fromMe ? userId : participantId;
+        const senderName = incomingUser.key.fromMe ? socket.user.name : incomingUser.pushName;
+
+        if (messageType === 'conversation' || messageType === 'extendedTextMessage') {
+            member.updateOne(
+                { _id: senderId },
+                { $inc: { totalMessages: 1 }, $set: { username: senderName } }
+            );
+            createMembersData(senderId, senderName);
+        }
+
+        let groupMetadata = ''
+        if (
+            isGroupChat &&
+            (messageType == 'conversation' || messageType == 'extendedTextMessage')
+        ) {
+            groupMetadata = cache.get(remoteJid + ':groupMetadata')
+            if (!groupMetadata) {
+                groupMetadata = await socket.groupMetadata(remoteJid);
+                const cacheExpiry = 3600; // Cache expiry time in seconds
+                const cacheKey = remoteJid + ':groupMetadata';
+                cache.set(cacheKey, groupMetadata, cacheExpiry);
+                createGroupData(remoteJid, groupMetadata);
             }
-            incomingUser.message.extendedTextMessage &&
-                incomingUser.message.extendedTextMessage.contextInfo?.mentionedJid ==
-                userId &&
-                socket.sendMessage(
-                    remoteJid,
-                    { sticker: fs.readFileSync('./media/tag.webp') },
-                    { quoted: incomingUser }
-                )
-            // Extract phone number from participantId
-            const incomingPhoneNumber = participantId.includes(':')
-                ? participantId.split(':')[0]
-                : participantId.split('@')[0];
 
-            const memberData = await getMemberData(participantId)
-            const groupData = isGroupChat ? await getGroupData(remoteJid) : ''
+            // Update member count and name if member already exists in the group
+            group.updateOne(
+                {
+                    _id: remoteJid,
+                    'members.id': senderId,
+                },
+                {
+                    $inc: { 'members.$.count': 1 },
+                    $set: { 'members.$.name': senderName },
+                }
+            )
+                .then((result) => {
+                    // If no match found, add the member to the group
+                    if (result.matchedCount === 0) {
+                        group.updateOne(
+                            { _id: remoteJid },
+                            {
+                                $push: {
+                                    members: {
+                                        id: senderId,
+                                        name: senderName,
+                                        count: 1,
+                                    },
+                                },
+                            }
+                        );
+                    }
+                });
 
-            if (isGroupChat && messageType === 'imageMessage' && groupData?.isAutoStickerOn && incomingUser.message.imageMessage.caption === '') {
-                console.log('Sticker Created');
-                commandsPublic.sticker(socket, incomingUser, remoteJid, argumentsMsg, {
-                    senderJid: participantId,
-                    type: messageType,
-                    content: messageJson,
-                    isGroup: isGroupChat,
-                    sendMessageWTyping: sendTypingIndicator,
-                    evv: trimmedContent,
+            // Increment total message count for the group
+            group.updateOne({ _id: remoteJid }, { $inc: { totalMsgCount: 1 } });
+
+        }
+        incomingUser.message.extendedTextMessage &&
+            incomingUser.message.extendedTextMessage.contextInfo?.mentionedJid ==
+            userId &&
+            socket.sendMessage(
+                remoteJid,
+                { sticker: fs.readFileSync('./media/tag.webp') },
+                { quoted: incomingUser }
+            )
+        // Extract phone number from participantId
+        const incomingPhoneNumber = participantId.includes(':')
+            ? participantId.split(':')[0]
+            : participantId.split('@')[0];
+
+        const memberData = await getMemberData(participantId)
+        const groupData = isGroupChat ? await getGroupData(remoteJid) : ''
+
+        if (isGroupChat && messageType === 'imageMessage' && groupData?.isAutoStickerOn && incomingUser.message.imageMessage.caption === '') {
+            console.log('Sticker Created');
+            commandsPublic.sticker(socket, incomingUser, remoteJid, argumentsMsg, {
+                senderJid: participantId,
+                type: messageType,
+                content: messageJson,
+                isGroup: isGroupChat,
+                sendMessageWTyping: sendTypingIndicator,
+                evv: trimmedContent,
+            });
+        }
+
+        if (memberData?.isBlock) {
+            return
+        }
+
+        // Check if the message type is conversation or extended text message
+        if (['conversation', 'extendedTextMessage'].includes(messageType)) {
+            // Extract the command from the message content
+            const command = messageContent.split(' ')[0].toLowerCase();
+            // Check if the command is 'eva' or 'gemini'
+            if (['eva', 'gemini'].includes(command)) {
+                // Check if the user is blocked
+                if (memberData?.isBlock) {
+                    return sendMessageWithMentions('User Blocked: ' + participantId);
+                }
+                // Check if the chat bot is enabled in the group
+                const isChatBotEnabled = groupData?.isChatBotOn || false;
+                // Execute the command if the chat bot is enabled
+                if (isChatBotEnabled) {
+                    commandsPublic.eva(socket, incomingUser, remoteJid, argumentsMsg, {
+                        evv: trimmedContent,
+                        sendMessageWTyping: sendTypingIndicator,
+                        isGroup: isGroupChat,
+                    });
+                }
+            }
+        }
+
+
+        if (!isPrefixedCommand) {
+            return
+        }
+
+        await socket.readMessages([incomingUser.key])
+        const groupAdmins = isGroupChat ? getGroupAdmins(groupMetadata.participants) : ''
+        const isGroupAdmin = groupAdmins.includes(participantId) || false
+
+
+
+        const messageInfo = {
+            prefix,
+            type: messageType,
+            content: messageJson,
+            evv: trimmedContent,
+            command: commandReceived,
+            isGroup: isGroupChat,
+            senderJid: participantId,
+            groupMetadata,
+            groupAdmins,
+            botNumberJid: userId,
+            sendMessageWTyping: sendTypingIndicator,
+            ownerSend: sendMessageWithMentions,
+        };
+
+        console.log(
+            '[COMMAND]',
+            commandReceived,
+            '[FROM]',
+            incomingPhoneNumber,
+            '[name]',
+            incomingUser.pushName,
+            '[IN]',
+            isGroupChat ? groupMetadata.subject : 'DM',
+            '[JID]',
+            remoteJid
+        )
+
+        sendMessageWithMentions(
+            '\uD83D\uDCDD: ' +
+            prefix +
+            commandReceived +
+            ' by ' +
+            incomingUser.pushName +
+            '(+' +
+            incomingPhoneNumber +
+            ') in ' +
+            (isGroupChat ? groupMetadata.subject : 'DM') + ' (' + remoteJid + ')'
+        )
+
+        if (isGroupChat) {
+            let isBotEnabled = groupData ? await groupData.isBotOn : false;
+
+            if (
+                !isBotEnabled &&
+                !(commandReceived.startsWith('group') || commandReceived.startsWith('dev') || commandReceived.startsWith('authorize'))
+            ) {
+                return sendTypingIndicator(remoteJid, {
+                    text:
+                        '```The bot is disabled by default\nAsk the owner to activate.\n\nUse ```' +
+                        prefix +
+                        'dev',
                 });
             }
 
-            if (memberData?.isBlock) {
-                return
-            }
+            let blockedCommands = await groupData?.cmdBlocked;
 
-            // Check if the message type is conversation or extended text message
-            if (['conversation', 'extendedTextMessage'].includes(messageType)) {
-                // Extract the command from the message content
-                const command = messageContent.split(' ')[0].toLowerCase();
-                // Check if the command is 'eva' or 'gemini'
-                if (['eva', 'gemini'].includes(command)) {
-                    // Check if the user is blocked
-                    if (memberData?.isBlock) {
-                        return sendMessageWithMentions('User Blocked: ' + participantId);
-                    }
-                    // Check if the chat bot is enabled in the group
-                    const isChatBotEnabled = groupData?.isChatBotOn || false;
-                    // Execute the command if the chat bot is enabled
-                    if (isChatBotEnabled) {
-                        commandsPublic.eva(socket, incomingUser, remoteJid, argumentsMsg, {
-                            evv: trimmedContent,
-                            sendMessageWTyping: sendTypingIndicator,
-                            isGroup: isGroupChat,
-                        });
-                    }
+            if (commandReceived !== '') {
+                if (blockedCommands.includes(commandReceived)) {
+                    return sendTypingIndicator(
+                        remoteJid,
+                        { text: 'Command disabled for this group.' },
+                        { quoted: incomingUser }
+                    );
                 }
             }
+        }
 
-
-            if (!isPrefixedCommand) {
-                return
-            }
-
-            await socket.readMessages([incomingUser.key])
-            const groupAdmins = isGroupChat ? getGroupAdmins(groupMetadata.participants) : ''
-            const isGroupAdmin = groupAdmins.includes(participantId) || false
-
-            if (['idp', 'dp', 'insta', 'i', 'ig'].includes(commandReceived)) {
-                const instaSession = process.env.INSTA_API_KEY
-                ig = new igApi(instaSession)
-            }
-
-            const messageInfo = {
-                prefix,
-                type: messageType,
-                content: messageJson,
-                evv: trimmedContent,
-                command: commandReceived,
-                isGroup: isGroupChat,
-                ig,
-                senderJid: participantId,
-                groupMetadata,
-                groupAdmins,
-                botNumberJid: userId,
-                sendMessageWTyping: sendTypingIndicator,
-                ownerSend: sendMessageWithMentions,
-            };
-
-            console.log(
-                '[COMMAND]',
-                commandReceived,
-                '[FROM]',
-                incomingPhoneNumber,
-                '[name]',
-                incomingUser.pushName,
-                '[IN]',
-                isGroupChat ? groupMetadata.subject : 'DM'
+        if (commandsPublic[commandReceived]) {
+            return commandsPublic[commandReceived](
+                socket,
+                incomingUser,
+                remoteJid,
+                argumentsMsg,
+                messageInfo
             )
-
-            sendMessageWithMentions(
-                '\uD83D\uDCDD: ' +
-                prefix +
-                commandReceived +
-                ' by ' +
-                incomingUser.pushName +
-                '(+' +
-                incomingPhoneNumber +
-                ') in ' +
-                (isGroupChat ? groupMetadata.subject : 'DM')
-            )
-
-            if (isGroupChat) {
-                let isBotEnabled = groupData ? await groupData.isBotOn : false;
-
-                if (
-                    !isBotEnabled &&
-                    !(commandReceived.startsWith('group') || commandReceived.startsWith('dev') || commandReceived.startsWith('authorize'))
-                ) {
-                    return sendTypingIndicator(remoteJid, {
-                        text:
-                            '```The bot is disabled by default\nAsk the owner to activate.\n\nUse ```' +
-                            prefix +
-                            'dev',
-                    });
-                }
-
-                let blockedCommands = await groupData?.cmdBlocked;
-
-                if (commandReceived !== '') {
-                    if (blockedCommands.includes(commandReceived)) {
-                        return sendTypingIndicator(
-                            remoteJid,
-                            { text: 'Command disabled for this group.' },
-                            { quoted: incomingUser }
-                        );
-                    }
-                }
-            }
-
-            if (commandsPublic[commandReceived]) {
-                return commandsPublic[commandReceived](
+        } else if (commandsMembers[commandReceived]) {
+            return isGroupChat || incomingUser.key.fromMe
+                ? commandsMembers[commandReceived](
                     socket,
                     incomingUser,
                     remoteJid,
                     argumentsMsg,
                     messageInfo
                 )
+                : sendTypingIndicator(
+                    remoteJid,
+                    {
+                        text: '```\u274C This command only works on group chats!```',
+                    },
+                    { quoted: incomingUser }
+                )
+        } else if (commandsAdmins[commandReceived]) {
+            if (!isGroupChat) {
+                return sendTypingIndicator(
+                    remoteJid,
+                    {
+                        text: '```\u274C This command only works on group chats!```',
+                    },
+                    { quoted: incomingUser }
+                )
             } else {
-                if (commandsMembers[commandReceived]) {
-                    return isGroupChat || incomingUser.key.fromMe
-                        ? commandsMembers[commandReceived](
-                            socket,
-                            incomingUser,
-                            remoteJid,
-                            argumentsMsg,
-                            messageInfo
-                        )
-                        : sendTypingIndicator(
-                            remoteJid,
-                            {
-                                text: '```\u274C This command only works on group chats!```',
-                            },
-                            { quoted: incomingUser }
-                        )
-                } else {
-                    if (commandsAdmins[commandReceived]) {
-                        if (!isGroupChat) {
-                            return sendTypingIndicator(
-                                remoteJid,
-                                {
-                                    text: '```\u274C This command only works on group chats!```',
-                                },
-                                { quoted: incomingUser }
-                            )
-                        } else {
-                            return isGroupAdmin || moderatos.includes(incomingPhoneNumber)
-                                ? commandsAdmins[commandReceived](
-                                    socket,
-                                    incomingUser,
-                                    remoteJid,
-                                    argumentsMsg,
-                                    messageInfo
-                                )
-                                : sendTypingIndicator(
-                                    remoteJid,
-                                    { text: '```\uD83E\uDD2D You are not an admin!```' },
-                                    { quoted: incomingUser }
-                                )
-                        }
-                    } else {
-                        // Check if the command exists in the owner's commands
-                        const ownerCommandExists = commandsOwners[commandReceived];
-
-                        if (ownerCommandExists) {
-                            // Check if the sender is a moderator or the owner
-                            const isModeratorOrOwner = moderatos.includes(incomingPhoneNumber) || myNumber == participantId;
-
-                            if (isModeratorOrOwner) {
-                                // Execute the owner's command
-                                return commandsOwners[commandReceived](
-                                    socket,
-                                    incomingUser,
-                                    remoteJid,
-                                    argumentsMsg,
-                                    messageInfo
-                                );
-                            } else {
-                                // Send a message indicating that the user is not the owner
-                                return sendTypingIndicator(
-                                    remoteJid,
-                                    { text: '```\uD83E\uDD2D You are not the owner!```' },
-                                    { quoted: incomingUser }
-                                );
-                            }
-                        } else {
-                            // Send a message indicating that the command is invalid
-                            return sendTypingIndicator(
-                                remoteJid,
-                                {
-                                    text:
-                                        '' +
-                                        incomingUser.pushName +
-                                        ', you issued an invalid command! See available commands: ' + '```' +
-                                        prefix +
-                                        'help ```',
-                                },
-                                { quoted: incomingUser }
-                            );
-                        }
-
-                    }
-                }
+                return isGroupAdmin || moderatos.includes(incomingPhoneNumber)
+                    ? commandsAdmins[commandReceived](
+                        socket,
+                        incomingUser,
+                        remoteJid,
+                        argumentsMsg,
+                        messageInfo
+                    )
+                    : sendTypingIndicator(
+                        remoteJid,
+                        { text: '```\uD83E\uDD2D You are not an admin!```' },
+                        { quoted: incomingUser }
+                    )
             }
+        } else {
+            // Check if the command exists in the owner's commands
+            const ownerCommandExists = commandsOwners[commandReceived];
+
+            if (ownerCommandExists) {
+                // Check if the sender is a moderator or the owner
+                const isModeratorOrOwner = moderatos.includes(incomingPhoneNumber) || myNumber == participantId;
+
+                if (isModeratorOrOwner) {
+                    // Execute the owner's command
+                    return commandsOwners[commandReceived](
+                        socket,
+                        incomingUser,
+                        remoteJid,
+                        argumentsMsg,
+                        messageInfo
+                    );
+                } else {
+                    // Send a message indicating that the user is not the owner
+                    return sendTypingIndicator(
+                        remoteJid,
+                        { text: '```\uD83E\uDD2D You are not the owner!```' },
+                        { quoted: incomingUser }
+                    );
+                }
+            } else {
+                // Send a message indicating that the command is invalid
+                return sendTypingIndicator(
+                    remoteJid,
+                    {
+                        text:
+                            '' +
+                            incomingUser.pushName +
+                            ', you issued an invalid command! See available commands: ' + '```' +
+                            prefix +
+                            'help ```',
+                    },
+                    { quoted: incomingUser }
+                );
+            }
+
         }
+    }
 
     socket.ev.process(async (event) => {
         if (event['connection.update']) {
