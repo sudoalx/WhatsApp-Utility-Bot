@@ -4,6 +4,7 @@ const { reactToMessage } = require("../../../utils/sendReaction");
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     const { evv, type, content, sendMessageWTyping, senderJid, ig } = msgInfoObj;
 
+    let sendAll = 0;
     await reactToMessage(from, sock, msg, "🔄");
 
     // convert the content text to json
@@ -19,10 +20,12 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         // If quotedMessage has an extendedTextMessage (opengraph preview), use that, otherwise use the conversation (text message)
         const quotedText = quotedMessage.extendedTextMessage?.text ?? quotedMessage.conversation;
         sourceUrl = quotedText;
+        sendAll = args[0] ?? 0;
     } else {
         // Handle the case where quotedMessage is undefined
         // If args[0] is defined, use that, otherwise send an error message
         sourceUrl = args[0] ?? null;
+        sendAll = args[1] ?? 0;
     }
 
     // sanitize the url, extract url from the message by using regex
@@ -52,26 +55,15 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
 
         if (res.status) {
             const data = [...new Set(res.data.map(item => item.url))];
-            for (const element of data) {
-
+            const urlsToSend = sendAll ? data : [data[0]];
+            for (const url of urlsToSend) {
                 setTimeout(async () => {
-                    const url = element;
-                    if (url.includes("jpg") || url.includes("png") || url.includes("jpeg") || url.includes("webp")) {
-                        sock.sendMessage(from,
-                            { image: { url: url } },
-                            { quoted: msg }
-                        );
-                        await reactToMessage(from, sock, msg, "✅");
-                    } else {
-                        sock.sendMessage(from,
-                            { video: { url: url } },
-                            { quoted: msg }
-                        );
-                        await reactToMessage(from, sock, msg, "✅");
-                    }
+                    sock.sendMessage(from, { [url.includes("jpg") || url.includes("png") || url.includes("jpeg") || url.includes("webp") ? "image" : "video"]: { url } }, { quoted: msg });
+                    await reactToMessage(from, sock, msg, "✅");
                 }, 1000 * 1);
             }
         } else {
+            console.error("Error downloading media:", res);
             await reactToMessage(from, sock, msg, "❌");
             sendMessageWTyping(from, { text: "❌ Unable to download media." }, { quoted: msg });
         }
