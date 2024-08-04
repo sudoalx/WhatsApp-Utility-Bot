@@ -72,9 +72,9 @@ const interval2 = setInterval(() => {
     { stickerForward, forwardGroup } = require('./utils/stickerForward')
 const { getGroupAdmins } = require('./utils/getGroupAdmins')
 
-const myNumber = process.env.myNumber + '@s.whatsapp.net',
+const myNumber = process.env.myNumber + '@s.whatsapp.net'
 const LOGS_CHANNEL = process.env.LOGS_CHANNEL ?? myNumber
-prefix = process.env.PREFIX || '/',
+const prefix = process.env.PREFIX ?? '/',
     moderatos = [
         '' + process.env.myNumber,
         '' + process.env.botNumber,
@@ -522,9 +522,9 @@ const startSock = async (connectionType) => {
             ) {
                 return sendTypingIndicator(remoteJid, {
                     text:
-                        'The bot is disabled on this group.\nAsk the owner to activate.\n\nSend: ```' +
+                        '```The bot is disabled by default\nAsk the owner to activate.\n\nUse ```' +
                         prefix +
-                        'dev``` for more info',
+                        'dev',
                 });
             }
 
@@ -534,7 +534,7 @@ const startSock = async (connectionType) => {
                 if (blockedCommands.includes(commandReceived)) {
                     return sendTypingIndicator(
                         remoteJid,
-                        { text: `Command ${commandReceived} is disabled on this group chat.` },
+                        { text: 'Command disabled for this group.' },
                         { quoted: incomingUser }
                     );
                 }
@@ -561,7 +561,7 @@ const startSock = async (connectionType) => {
                 : sendTypingIndicator(
                     remoteJid,
                     {
-                        text: '\u274C This command only works on group chats!',
+                        text: '```\u274C This command only works on group chats!```',
                     },
                     { quoted: incomingUser }
                 )
@@ -570,7 +570,7 @@ const startSock = async (connectionType) => {
                 return sendTypingIndicator(
                     remoteJid,
                     {
-                        text: '\u274C This command only works on group chats!',
+                        text: '```\u274C This command only works on group chats!```',
                     },
                     { quoted: incomingUser }
                 )
@@ -585,7 +585,7 @@ const startSock = async (connectionType) => {
                     )
                     : sendTypingIndicator(
                         remoteJid,
-                        { text: '\uD83E\uDD2D You are not an admin!' },
+                        { text: '```\uD83E\uDD2D You are not an admin!```' },
                         { quoted: incomingUser }
                     )
             }
@@ -610,7 +610,7 @@ const startSock = async (connectionType) => {
                     // Send a message indicating that the user is not the owner
                     return sendTypingIndicator(
                         remoteJid,
-                        { text: '\uD83E\uDD2D You are not the owner!' },
+                        { text: '```\uD83E\uDD2D You are not the owner!```' },
                         { quoted: incomingUser }
                     );
                 }
@@ -681,7 +681,7 @@ const startSock = async (connectionType) => {
             createGroupData(groupUpsertEvent[0].id, socket.groupMetadata(groupUpsertEvent[0].id));
             group.updateOne({ _id: groupUpsertEvent[0].id }, { $set: { isBotOn: false } });
             await socket.sendMessage(groupUpsertEvent[0].id, {
-                text: '*Thank you for adding me to this group.*\nIf you want to use this bot, ask the owner to enable it. Send: ```' + prefix + 'dev``` for help.',
+                text: '*Thank you for adding me to this group.*\n*If you want to use this bot, ask the owner to enable it. Send: ' + prefix + 'dev* for help',
             });
             try {
                 const groupId = groupUpsertEvent[0].id;
