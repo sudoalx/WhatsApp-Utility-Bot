@@ -9,6 +9,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
     const diff = process.hrtime(start);
     const responseTime = (diff[0] * 1e9 + diff[1]) / 1e6;
     const response = `*🎾 Pong!*\n\n*Response Time:* ${responseTime.toFixed(2)}ms\n*Uptime:* ${uptime.toFixed(2)}s`;
+    reactToMessage(from, sock, msg, "✅")
     return sendMessageWTyping(from, { text: response }, { quoted: msg });
 };
 
