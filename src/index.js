@@ -72,9 +72,9 @@ const interval2 = setInterval(() => {
     { stickerForward, forwardGroup } = require('./utils/stickerForward')
 const { getGroupAdmins } = require('./utils/getGroupAdmins')
 
-const LOGS_CHANNEL = process.env.LOGS_CHANNEL ?? myNumber
 const myNumber = process.env.myNumber + '@s.whatsapp.net',
-    prefix = process.env.PREFIX || '/',
+const LOGS_CHANNEL = process.env.LOGS_CHANNEL ?? myNumber
+prefix = process.env.PREFIX || '/',
     moderatos = [
         '' + process.env.myNumber,
         '' + process.env.botNumber,
