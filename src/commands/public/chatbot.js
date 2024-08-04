@@ -4,7 +4,7 @@ const { getGroupData } = require('../../mongo-DB/groupDataDb')
 const OpenAI = require('openai');
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.OPENAI_API_KEY ?? "",
 });
 
 async function chat(prompt, from, msg, tag, sendMessageWTyping) {
