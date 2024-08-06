@@ -3,7 +3,7 @@ const PIN_KEY = process.env.PIN_KEY || "";
 
 const axios = require("axios");
 module.exports.command = () => {
-    let cmd = ["pin", "pd"];
+    let cmd = ["pinterest", "pd"];
     return { cmd, handler };
 }
 
