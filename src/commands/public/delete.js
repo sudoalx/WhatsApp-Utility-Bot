@@ -4,7 +4,7 @@ module.exports.command = () => {
 }
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
-    let { botNumberJid, sendMessageWTyping, groupAdmins, senderJid } = msgInfoObj;
+    let { botPhoneJid, sendMessageWTyping, groupAdmins, senderJid } = msgInfoObj;
 
     try {
 
@@ -12,12 +12,12 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
             return sendMessageWTyping(from, { text: `❌ Tag a message of to delete.` }, { quoted: msg });
         }
 
-        if (!(msg.message.extendedTextMessage.contextInfo.participant == botNumberJid)) {
+        if (!(msg.message.extendedTextMessage.contextInfo.participant == botPhoneJid)) {
 
             if (!groupAdmins.includes(senderJid))
                 return sendMessageWTyping(from, { text: `❌ Only admins can delete others' message` }, { quoted: msg });
 
-            if (!groupAdmins.includes(botNumberJid))
+            if (!groupAdmins.includes(botPhoneJid))
                 return sendMessageWTyping(from, { text: `❌ Bot needs to be an admin in order to delete others' messages` }, { quoted: msg });
         }
 
@@ -28,8 +28,8 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
             participant: msg.message.extendedTextMessage.contextInfo.participant
         }
 
-        if ((msg.message.extendedTextMessage.contextInfo.participant == botNumberJid)) {
-            options.remoteJid = botNumberJid;
+        if ((msg.message.extendedTextMessage.contextInfo.participant == botPhoneJid)) {
+            options.remoteJid = botPhoneJid;
             options.fromMe = true;
         }
 

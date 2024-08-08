@@ -1,12 +1,12 @@
 const handler = async (sock, msg, from, args, msgInfoObj) => {
-    const { groupAdmins, groupMetadata, sendMessageWTyping, botNumberJid } = msgInfoObj;
+    const { groupAdmins, groupMetadata, sendMessageWTyping, botPhoneJid } = msgInfoObj;
     // return sendMessageWTyping(
     //     from,
     //     { text: "```❌ The admin commands are blocked for sometime to avoid ban on whatsapp!```" },
     //     { quoted: msg }
     // );
 
-    if (!groupAdmins.includes(botNumberJid)) {
+    if (!groupAdmins.includes(botPhoneJid)) {
         return sendMessageWTyping(from, { text: '❌ I\'m not an admin here' }, { quoted: msg });
     }
 

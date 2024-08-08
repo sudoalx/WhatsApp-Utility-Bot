@@ -1,16 +1,11 @@
 require('dotenv').config;
-const myNumber = process.env.myNumber + '@s.whatsapp.net';
+const OWNER_PHONE = process.env.OWNER_PHONE + '@s.whatsapp.net';
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
 
-    const { groupAdmins, sendMessageWTyping, groupMetadata, botNumberJid } = msgInfoObj;
-    // return sendMessageWTyping(
-    //     from,
-    //     { text: "```❌ The admin commands are blocked for sometime to avoid ban on whatsapp!```" },
-    //     { quoted: msg }
-    // );
+    const { groupAdmins, sendMessageWTyping, groupMetadata, botPhoneJid } = msgInfoObj;
 
-    if (!groupAdmins.includes(botNumberJid)) {
+    if (!groupAdmins.includes(botPhoneJid)) {
         return sendMessageWTyping(from, { text: `❌ I'm not admin here` }, { quoted: msg });
     }
 
@@ -20,7 +15,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
 
     const taggedJid = msg.message.extendedTextMessage.contextInfo.participant || msg.message.extendedTextMessage.contextInfo.mentionedJid[0];
 
-    if (taggedJid === groupMetadata.owner || taggedJid === myNumber || groupAdmins.includes(taggedJid)) {
+    if (taggedJid === groupMetadata.owner || taggedJid === OWNER_PHONE || groupAdmins.includes(taggedJid)) {
         return sendMessageWTyping(from, { text: `❌ *Can't remove Bot/Owner/admin*` }, { quoted: msg });
     }
 

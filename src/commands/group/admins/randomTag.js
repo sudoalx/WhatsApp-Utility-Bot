@@ -1,5 +1,5 @@
 const handler = async (sock, msg, from, args, msgInfoObj) => {
-    const { sendMessageWTyping, botNumberJid } = msgInfoObj;
+    const { sendMessageWTyping, botPhoneJid } = msgInfoObj;
     const groupMetadata = await sock.groupMetadata(from);
     let message = '';
 
@@ -11,7 +11,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         if (args.length > 0) {
             message = args.join(" ");
         }
-        const mention = groupMetadata.participants.filter((p) => p.id != botNumberJid)
+        const mention = groupMetadata.participants.filter((p) => p.id != botPhoneJid)
         const random = Math.floor(Math.random() * mention.length);
         console.log(message, mention[random].id, mention[random].id.split("@")[0]);
         message += " @" + mention[random].id.split("@")[0];

@@ -72,12 +72,12 @@ const interval2 = setInterval(() => {
     { stickerForward, forwardGroup } = require('./utils/stickerForward')
 const { getGroupAdmins } = require('./utils/getGroupAdmins')
 
-const myNumber = process.env.myNumber + '@s.whatsapp.net'
-const LOGS_CHANNEL = process.env.LOGS_CHANNEL ?? myNumber
+const OWNER_PHONE = process.env.OWNER_PHONE + '@s.whatsapp.net'
+const LOGS_CHANNEL = process.env.LOGS_CHANNEL ?? OWNER_PHONE
 const prefix = process.env.PREFIX ?? '/',
     moderatos = [
-        '' + process.env.myNumber,
-        '' + process.env.botNumber,
+        '' + process.env.OWNER_PHONE,
+        '' + process.env.BOT_PHONE,
     ]
 
 
@@ -483,7 +483,7 @@ const startSock = async (connectionType) => {
             senderJid: participantId,
             groupMetadata,
             groupAdmins,
-            botNumberJid: userId,
+            botPhoneJid: userId,
             sendMessageWTyping: sendTypingIndicator,
             ownerSend: sendMessageWithMentions,
         };
@@ -595,7 +595,7 @@ const startSock = async (connectionType) => {
 
             if (ownerCommandExists) {
                 // Check if the sender is a moderator or the owner
-                const isModeratorOrOwner = moderatos.includes(incomingPhoneNumber) || myNumber == participantId;
+                const isModeratorOrOwner = moderatos.includes(incomingPhoneNumber) || OWNER_PHONE == participantId;
 
                 if (isModeratorOrOwner) {
                     // Execute the owner's command

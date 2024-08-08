@@ -1,11 +1,7 @@
 const handler = async (sock, msg, from, args, msgInfoObj) => {
-    const { evv, groupAdmins, sendMessageWTyping, botNumberJid } = msgInfoObj;
-    // return sendMessageWTyping(
-    //     from,
-    //     { text: "```❌ The admin commands are blocked for sometime to avoid ban on whatsapp!```" },
-    //     { quoted: msg }
-    // );
-    if (!groupAdmins.includes(botNumberJid)) {
+    const { evv, groupAdmins, sendMessageWTyping, botPhoneJid: botPhoneJid } = msgInfoObj;
+
+    if (!groupAdmins.includes(botPhoneJid)) {
         return sendMessageWTyping(from, { text: "❌ Bot needs to be admin to add members." }, { quoted: msg });
     }
     if (!evv && (!msg.message.extendedTextMessage && !args[0])) {

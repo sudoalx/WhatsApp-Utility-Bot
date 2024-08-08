@@ -1,5 +1,5 @@
 require('dotenv').config();
-const myNumber = process.env.myNumber + '@s.whatsapp.net';
+const OWNER_PHONE = process.env.OWNER_PHONE + '@s.whatsapp.net';
 const { member } = require('../../mongo-DB/membersDataDb')
 
 module.exports.command = () => {
@@ -9,7 +9,7 @@ module.exports.command = () => {
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
 
-    const { command, botNumberJid, sendMessageWTyping } = msgInfoObj;
+    const { command, botPhoneJid, sendMessageWTyping } = msgInfoObj;
 
     if (!msg.message.extendedTextMessage)
         return sendMessageWTyping(from, { text: "❌ Tag / mentioned!" }, { quoted: msg });
@@ -24,9 +24,9 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         taggedJid.split(":")[0] :
         taggedJid.split("@")[0];
 
-    console.log(taggedJid, botNumberJid);
+    console.log(taggedJid, botPhoneJid);
 
-    if ((taggedJid == botNumberJid.split("@")[0]) || (taggedJid == myNumber.split("@")[0]))
+    if ((taggedJid == botPhoneJid.split("@")[0]) || (taggedJid == OWNER_PHONE.split("@")[0]))
         return sendMessageWTyping(from, { text: `_This command can't be used on bot/owner/admin_` }, { quoted: msg });
 
     if (command == "block") {

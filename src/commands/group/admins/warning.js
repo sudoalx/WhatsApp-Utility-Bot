@@ -2,10 +2,10 @@ const { getGroupData, createGroupData, group } = require('../../../mongo-DB/grou
 const { createMembersData, getMemberData, member } = require('../../../mongo-DB/membersDataDb');
 
 require('dotenv').config();
-const myNumber = process.env.myNumber + '@s.whatsapp.net';
+const OWNER_PHONE = process.env.OWNER_PHONE + '@s.whatsapp.net';
 
 const handler = async (sock, msg, from, args, msgInfoObj) => {
-    let { command, groupAdmins, sendMessageWTyping, botNumberJid } = msgInfoObj;
+    let { command, groupAdmins, sendMessageWTyping, botPhoneJid } = msgInfoObj;
     try {
         if (!msg.message.extendedTextMessage) {
             return sendMessageWTyping(from, { text: "❌ Tag someone! or reply to a message" }, { quoted: msg });
@@ -16,8 +16,8 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
 
         let isGroupAdmin = groupAdmins.includes(taggedJid);
         if (command != "unwarn") {
-            if (taggedJid == botNumberJid) return sendMessageWTyping(from, { text: `_How can I warn Myself_` }, { quoted: msg });
-            if (taggedJid == myNumber) return sendMessageWTyping(from, { text: `_Owner or Moderator cannot be warned_` }, { quoted: msg });
+            if (taggedJid == botPhoneJid) return sendMessageWTyping(from, { text: `_How can I warn Myself_` }, { quoted: msg });
+            if (taggedJid == OWNER_PHONE) return sendMessageWTyping(from, { text: `_Owner or Moderator cannot be warned_` }, { quoted: msg });
         }
         const groupData = await getGroupData(from);
         const memberData = await getMemberData(taggedJid);
@@ -70,7 +70,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
                         if (r.matchedCount == 0)
                             member.updateOne({ _id: taggedJid }, { $push: { "warning": { group: from, count: warnCount } } });
                         if (warnCount >= 3) {
-                            if (!groupAdmins.includes(botNumberJid)) {
+                            if (!groupAdmins.includes(botPhoneJid)) {
                                 sendMessageWTyping(from, { text: "❌ I'm not an admin here!" }, { quoted: msg });
                                 return;
                             }
