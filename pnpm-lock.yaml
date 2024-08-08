@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@adiwajshing/baileys':
         specifier: github:jacktheboss220/Baileys-New
-        version: '@whiskeysockets/baileys@https://codeload.github.com/jacktheboss220/Baileys-New/tar.gz/42cc25918cd53ec2fe75cbd3c7c2884a41cf5be5(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)'
+        version: '@whiskeysockets/baileys@https://codeload.github.com/jacktheboss220/Baileys-New/tar.gz/42cc25918cd53ec2fe75cbd3c7c2884a41cf5be5(jimp@0.16.13)(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)'
       '@bochilteam/scraper':
         specifier: ^4.2.4
         version: 4.2.4(ws@8.16.0)
@@ -28,7 +28,7 @@ importers:
         version: 1.1.2
       '@whiskeysockets/baileys':
         specifier: ^6.6.0
-        version: 6.6.0(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)
+        version: 6.6.0(jimp@0.16.13)(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)
       axios:
         specifier: ^1.6.5
         version: 1.6.8
@@ -63,8 +63,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.1
       google-news-scraper:
-        specifier: ^1.2.2
-        version: 1.2.2(canvas@2.11.2)(typescript@5.4.4)
+        specifier: ^1.2.5
+        version: 1.2.5(canvas@2.11.2)(typescript@5.4.4)
       google-tts-api:
         specifier: ^2.0.2
         version: 2.0.2
@@ -85,7 +85,7 @@ importers:
         version: 12.4.1
       mongodb:
         specifier: ^6.3.0
-        version: 6.5.0
+        version: 6.5.0(socks@2.8.3)
       node-cache:
         specifier: ^5.1.2
         version: 5.1.2
@@ -599,7 +599,6 @@ packages:
 
   '@whiskeysockets/baileys@https://codeload.github.com/jacktheboss220/Baileys-New/tar.gz/42cc25918cd53ec2fe75cbd3c7c2884a41cf5be5':
     resolution: {tarball: https://codeload.github.com/jacktheboss220/Baileys-New/tar.gz/42cc25918cd53ec2fe75cbd3c7c2884a41cf5be5}
-    name: '@whiskeysockets/baileys'
     version: 6.6.0
     peerDependencies:
       jimp: ^0.16.1
@@ -1586,8 +1585,8 @@ packages:
   global@4.4.0:
     resolution: {integrity: sha512-wv/LAoHdRE3BeTGz53FAamhGlPLhlssK45usmGFThIi4XqnBmjKQ16u+RNbP7WvigRZDxUsM0J3gcQ5yicaL0w==}
 
-  google-news-scraper@1.2.2:
-    resolution: {integrity: sha512-YDEasge9MIfUKSutPtrgiRHSA1H4nTGd8h/7UtcvsWRaeIfk+jDM5aI4kj8dUBmwDdYDLBghC2Wk6UyN1Rs1ww==}
+  google-news-scraper@1.2.5:
+    resolution: {integrity: sha512-e5WAMPlXszk7l0JV12HL+RJjyXCWJMoryDrlIf0zA7apGspyV0GBS398Y3OxXqK/nlgXNpADYsKo+OQM/la3JA==}
 
   google-tts-api@2.0.2:
     resolution: {integrity: sha512-MkQYbBJEdom8hJpfEVDfD3tpBtkz0X59C+FNsoRhbnCiFjZRnzyurGQ5OrAr3xkigII56/jmk0JNwZsp450G+Q==}
@@ -1910,7 +1909,6 @@ packages:
 
   libsignal@https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97:
     resolution: {tarball: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97}
-    name: libsignal
     version: 2.0.1
 
   linebreak-next@1.0.3:
@@ -2748,7 +2746,6 @@ packages:
 
   snapsave-downloader@https://codeload.github.com/sudoalx/snapsave-scraper/tar.gz/fa4c4e9be49ce3a8919e4afcb7858a0082e19f52:
     resolution: {tarball: https://codeload.github.com/sudoalx/snapsave-scraper/tar.gz/fa4c4e9be49ce3a8919e4afcb7858a0082e19f52}
-    name: snapsave-downloader
     version: 6.9.5
 
   socks-proxy-agent@8.0.3:
@@ -3031,7 +3028,6 @@ packages:
 
   urban-dictionary@https://codeload.github.com/jacktheboss220/urban-dictionary/tar.gz/60576d12393de32c0490bc6af657e659b684f8be:
     resolution: {tarball: https://codeload.github.com/jacktheboss220/urban-dictionary/tar.gz/60576d12393de32c0490bc6af657e659b684f8be}
-    name: urban-dictionary
     version: 3.0.2
     engines: {node: '>=14.15.1'}
 
@@ -3086,7 +3082,6 @@ packages:
 
   wa-sticker-formatter@https://codeload.github.com/AlenVelocity/wa-sticker-formatter/tar.gz/210a287b4237901be459653bbcbf5049f57d94b0:
     resolution: {tarball: https://codeload.github.com/AlenVelocity/wa-sticker-formatter/tar.gz/210a287b4237901be459653bbcbf5049f57d94b0}
-    name: wa-sticker-formatter
     version: 4.4.4
 
   wcwidth@1.0.1:
@@ -3243,7 +3238,6 @@ packages:
 
   ytdl-core@https://codeload.github.com/khlevon/node-ytdl-core/tar.gz/87450450caabb91f81afa6e66758bf2f629664a1:
     resolution: {tarball: https://codeload.github.com/khlevon/node-ytdl-core/tar.gz/87450450caabb91f81afa6e66758bf2f629664a1}
-    name: ytdl-core
     version: 0.0.0-development
     engines: {node: '>=12'}
 
@@ -3474,22 +3468,22 @@ snapshots:
       '@jimp/utils': 0.16.13
       tinycolor2: 1.6.0
 
-  '@jimp/plugin-contain@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13)(@jimp/plugin-resize@0.16.13)(@jimp/plugin-scale@0.16.13)':
+  '@jimp/plugin-contain@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-scale@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13)))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
       '@jimp/plugin-blit': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-resize': 0.16.13(@jimp/custom@0.16.13)
-      '@jimp/plugin-scale': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13)
+      '@jimp/plugin-scale': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))
       '@jimp/utils': 0.16.13
 
-  '@jimp/plugin-cover@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-crop@0.16.13)(@jimp/plugin-resize@0.16.13)(@jimp/plugin-scale@0.16.13)':
+  '@jimp/plugin-cover@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-scale@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13)))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
       '@jimp/plugin-crop': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-resize': 0.16.13(@jimp/custom@0.16.13)
-      '@jimp/plugin-scale': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13)
+      '@jimp/plugin-scale': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))
       '@jimp/utils': 0.16.13
 
   '@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13)':
@@ -3516,11 +3510,11 @@ snapshots:
       '@jimp/custom': 0.16.13
       '@jimp/utils': 0.16.13
 
-  '@jimp/plugin-flip@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-rotate@0.16.13)':
+  '@jimp/plugin-flip@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-rotate@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13)))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
-      '@jimp/plugin-rotate': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13)(@jimp/plugin-crop@0.16.13)(@jimp/plugin-resize@0.16.13)
+      '@jimp/plugin-rotate': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))
       '@jimp/utils': 0.16.13
 
   '@jimp/plugin-gaussian@0.16.13(@jimp/custom@0.16.13)':
@@ -3547,7 +3541,7 @@ snapshots:
       '@jimp/custom': 0.16.13
       '@jimp/utils': 0.16.13
 
-  '@jimp/plugin-print@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13)':
+  '@jimp/plugin-print@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
@@ -3561,7 +3555,7 @@ snapshots:
       '@jimp/custom': 0.16.13
       '@jimp/utils': 0.16.13
 
-  '@jimp/plugin-rotate@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13)(@jimp/plugin-crop@0.16.13)(@jimp/plugin-resize@0.16.13)':
+  '@jimp/plugin-rotate@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
@@ -3570,14 +3564,14 @@ snapshots:
       '@jimp/plugin-resize': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/utils': 0.16.13
 
-  '@jimp/plugin-scale@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13)':
+  '@jimp/plugin-scale@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
       '@jimp/plugin-resize': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/utils': 0.16.13
 
-  '@jimp/plugin-shadow@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blur@0.16.13)(@jimp/plugin-resize@0.16.13)':
+  '@jimp/plugin-shadow@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blur@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
@@ -3585,7 +3579,7 @@ snapshots:
       '@jimp/plugin-resize': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/utils': 0.16.13
 
-  '@jimp/plugin-threshold@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-color@0.16.13)(@jimp/plugin-resize@0.16.13)':
+  '@jimp/plugin-threshold@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-color@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))':
     dependencies:
       '@babel/runtime': 7.24.4
       '@jimp/custom': 0.16.13
@@ -3601,23 +3595,23 @@ snapshots:
       '@jimp/plugin-blur': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-circle': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-color': 0.16.13(@jimp/custom@0.16.13)
-      '@jimp/plugin-contain': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13)(@jimp/plugin-resize@0.16.13)(@jimp/plugin-scale@0.16.13)
-      '@jimp/plugin-cover': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-crop@0.16.13)(@jimp/plugin-resize@0.16.13)(@jimp/plugin-scale@0.16.13)
+      '@jimp/plugin-contain': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-scale@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13)))
+      '@jimp/plugin-cover': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-scale@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13)))
       '@jimp/plugin-crop': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-displace': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-dither': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-fisheye': 0.16.13(@jimp/custom@0.16.13)
-      '@jimp/plugin-flip': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-rotate@0.16.13)
+      '@jimp/plugin-flip': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-rotate@0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13)))
       '@jimp/plugin-gaussian': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-invert': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-mask': 0.16.13(@jimp/custom@0.16.13)
       '@jimp/plugin-normalize': 0.16.13(@jimp/custom@0.16.13)
-      '@jimp/plugin-print': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13)
+      '@jimp/plugin-print': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))
       '@jimp/plugin-resize': 0.16.13(@jimp/custom@0.16.13)
-      '@jimp/plugin-rotate': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13)(@jimp/plugin-crop@0.16.13)(@jimp/plugin-resize@0.16.13)
-      '@jimp/plugin-scale': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13)
-      '@jimp/plugin-shadow': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blur@0.16.13)(@jimp/plugin-resize@0.16.13)
-      '@jimp/plugin-threshold': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-color@0.16.13)(@jimp/plugin-resize@0.16.13)
+      '@jimp/plugin-rotate': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blit@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-crop@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))
+      '@jimp/plugin-scale': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))
+      '@jimp/plugin-shadow': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-blur@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))
+      '@jimp/plugin-threshold': 0.16.13(@jimp/custom@0.16.13)(@jimp/plugin-color@0.16.13(@jimp/custom@0.16.13))(@jimp/plugin-resize@0.16.13(@jimp/custom@0.16.13))
       timm: 1.7.1
 
   '@jimp/png@0.16.13(@jimp/custom@0.16.13)':
@@ -3820,7 +3814,7 @@ snapshots:
       '@wasm-audio-decoders/common': 9.0.5
       codec-parser: 2.4.3
 
-  '@whiskeysockets/baileys@6.6.0(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)':
+  '@whiskeysockets/baileys@6.6.0(jimp@0.16.13)(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)':
     dependencies:
       '@adiwajshing/keyed-db': 0.2.4
       '@hapi/boom': 9.1.4
@@ -3830,23 +3824,24 @@ snapshots:
       futoin-hkdf: 1.5.3
       libphonenumber-js: 1.10.60
       libsignal: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97
-      link-preview-js: 3.0.5
       music-metadata: 7.14.0
       node-cache: 5.1.2
       pino: 7.11.0
       protobufjs: 7.2.6
-      qrcode-terminal: 0.12.0
-      sharp: 0.32.6
       uuid: 9.0.1
       ws: 8.16.0
+    optionalDependencies:
+      jimp: 0.16.13
+      link-preview-js: 3.0.5
+      qrcode-terminal: 0.12.0
+      sharp: 0.32.6
     transitivePeerDependencies:
       - bufferutil
       - debug
       - supports-color
       - utf-8-validate
 
-  '@whiskeysockets/baileys@https://codeload.github.com/jacktheboss220/Baileys-New/tar.gz/42cc25918cd53ec2fe75cbd3c7c2884a41cf5be5(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)':
-    id: '@whiskeysockets/baileys@https://codeload.github.com/jacktheboss220/Baileys-New/tar.gz/42cc25918cd53ec2fe75cbd3c7c2884a41cf5be5'
+  '@whiskeysockets/baileys@https://codeload.github.com/jacktheboss220/Baileys-New/tar.gz/42cc25918cd53ec2fe75cbd3c7c2884a41cf5be5(jimp@0.16.13)(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)':
     dependencies:
       '@adiwajshing/keyed-db': 0.2.4
       '@hapi/boom': 9.1.4
@@ -3856,15 +3851,17 @@ snapshots:
       futoin-hkdf: 1.5.3
       libphonenumber-js: 1.10.60
       libsignal: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97
-      link-preview-js: 3.0.5
       music-metadata: 7.14.0
       node-cache: 5.1.2
       pino: 7.11.0
       protobufjs: 7.2.6
-      qrcode-terminal: 0.12.0
-      sharp: 0.32.6
       uuid: 9.0.1
       ws: 8.16.0
+    optionalDependencies:
+      jimp: 0.16.13
+      link-preview-js: 3.0.5
+      qrcode-terminal: 0.12.0
+      sharp: 0.32.6
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -4359,6 +4356,7 @@ snapshots:
       import-fresh: 3.3.0
       js-yaml: 4.1.0
       parse-json: 5.2.0
+    optionalDependencies:
       typescript: 5.4.4
 
   create-require@1.1.1: {}
@@ -4969,7 +4967,7 @@ snapshots:
       min-document: 2.19.0
       process: 0.11.10
 
-  google-news-scraper@1.2.2(canvas@2.11.2)(typescript@5.4.4):
+  google-news-scraper@1.2.5(canvas@2.11.2)(typescript@5.4.4):
     dependencies:
       '@mozilla/readability': 0.5.0
       cheerio: 1.0.0-rc.12
@@ -5248,7 +5246,6 @@ snapshots:
 
   jsdom@24.0.0(canvas@2.11.2):
     dependencies:
-      canvas: 2.11.2
       cssstyle: 4.0.1
       data-urls: 5.0.0
       decimal.js: 10.4.3
@@ -5270,6 +5267,8 @@ snapshots:
       whatwg-url: 14.0.0
       ws: 8.16.0
       xml-name-validator: 5.0.0
+    optionalDependencies:
+      canvas: 2.11.2
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -5529,11 +5528,13 @@ snapshots:
       '@types/whatwg-url': 11.0.4
       whatwg-url: 13.0.0
 
-  mongodb@6.5.0:
+  mongodb@6.5.0(socks@2.8.3):
     dependencies:
       '@mongodb-js/saslprep': 1.1.5
       bson: 6.6.0
       mongodb-connection-string-url: 3.0.0
+    optionalDependencies:
+      socks: 2.8.3
 
   mpg123-decoder@0.4.12:
     dependencies:

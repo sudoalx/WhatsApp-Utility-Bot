@@ -1,6 +1,8 @@
 const googleNewsScraper = require('google-news-scraper');
 const { reactToMessage } = require('../../../utils/sendReaction');
 
+const prefix = process.env.PREFIX ?? '/'
+
 const handler = async (sock, msg, from, args, msgInfoObj) => {
     const { sendMessageWTyping, evv } = msgInfoObj;
     // react to the message with a loading indicator
@@ -8,7 +10,9 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
     try {
         if (!args[0]) {
             reactToMessage(from, sock, msg, "❌");
-            return sendMessageWTyping(from, { text: `❌ *Enter news topic*` }, { quoted: msg });
+            return sendMessageWTyping(from, {
+                text: `❌ *Enter news topic*\n*Example:*\n\`\`\`${prefix}news covid\n\`\`\`\n*Limit the number of articles to be shown:*\n\`\`\`${prefix}news covid;5\`\`\``
+            }, { quoted: msg });
         }
 
         const evvSplit = evv.split(";");
@@ -25,7 +29,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
         // Fetch news
         const encodedTopic = encodeURIComponent(newsTopic);
         let articles = await googleNewsScraper({ baseUrl: `https://news.google.com/search?q=${encodedTopic}` });
-        if (articles.length == 0) {
+        if (articles.length === 0) {
             reactToMessage(from, sock, msg, "❌");
             return sendMessageWTyping(from, { text: "❌ *No news found*" }, { quoted: msg });
         }
@@ -46,7 +50,7 @@ const handler = async (sock, msg, from, args, msgInfoObj) => {
             */
 
         // Limit the number of articles
-        articles = articles.slice(0, maxArticles); maxArticles
+        articles = articles.slice(0, maxArticles);
 
 
         const news = articles.map((article, i) => {
